@@ -1,9 +1,9 @@
 import ar.edu.itba.models.Lattice;
 import ar.edu.itba.models.State;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FHP {
     private final Map<State, State> collisionLookupTable;
@@ -35,7 +35,7 @@ public class FHP {
                 if (j == width / 2 && (i < (height - D) / 2 || i > (height + D) / 2)) {
                     isWall = true;
                 }
-                lattice.setLatticeNode(i, j, new State(false, false, false, false, false, false, isWall, randomBit));
+                lattice.setLatticeNode(i, j, new State(isWall, randomBit));
             }
         }
     }
@@ -46,7 +46,9 @@ public class FHP {
         int width = (this.lattice.getWidth() / 2);
         int height = this.lattice.getHeight();
         int cell, row, col;
-        for (int i = 0; i < this.N; i++) {
+        boolean[] directions = new boolean[6];
+        //List<Integer> possibleDirections = IntStream.range(0, 6).boxed().toList();
+        for (int i = 0; i < this.N; ) {
             cell = cellRandom.nextInt(height * width);
             row = cell / width;
             col = cell % width;
@@ -96,6 +98,6 @@ public class FHP {
         boolean newC = c ^ ((triple || double3 || (r && double1) || (!r && double2)) && !s);
         boolean newF = f ^ ((triple || double3 || (r && double1) || (!r && double2)) && !s);
 
-        return new State(newA, newB, newC, newD, newE, newF, r, s);
+        return new State(newA, newB, newC, newD, newE, newF, s, r);
     }
 }
