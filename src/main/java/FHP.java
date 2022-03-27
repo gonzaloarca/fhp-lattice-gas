@@ -7,20 +7,33 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class FHP {
     private final Map<State, State> collisionLookupTable;
     private final Lattice lattice;
     private final int N;
     private final int D;
+    private final SubGridStatistics[][] subGridStatistics;
+    private final int totalSubGrids;
+    private final int maxParticlesPerSubGrid;
+    private final int subGridHeight;
+    private final int subGridWidth;
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight) throws IOException {
+    private final static String LATTICE_FILE = "Lattice.txt";
+    private final static String LATTICE_SUBGRIDS_FILE = "LatticeSubGrids.txt";
+    private final static int MAX_PARTICLES_PER_CELL = 6;
+
+
+    public FHP(int n, int d, int latticeWidth, int latticeHeight, int subGridHeight, int subGridWidth) throws IOException {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
+        this.totalSubGrids = (latticeHeight / subGridHeight) * (latticeWidth / subGridWidth);
+        this.maxParticlesPerSubGrid = subGridHeight * subGridWidth * MAX_PARTICLES_PER_CELL;
+        this.subGridStatistics = new SubGridStatistics[latticeHeight / subGridHeight][latticeWidth / subGridWidth];
+        this.subGridHeight = subGridHeight;
+        this.subGridWidth = subGridWidth;
         initializeCollisionLookupTable();
     }
 
@@ -32,7 +45,9 @@ public class FHP {
         boolean isWall;
         boolean randomBit;
         for (int i = 0; i < height; i++) {
+            int subGridRow = i / subGridHeight;
             for (int j = 0; j < width; j++) {
+                int subGridColumn = j / subGridWidth;
                 randomBit = random.nextBoolean();
                 isWall = j == 0 || j == width - 1 || i == 0 || i == height - 1;
 
@@ -40,6 +55,11 @@ public class FHP {
                 if (j == width / 2 && (i < (height - D) / 2 || i > (height + D) / 2)) {
                     isWall = true;
                 }
+
+                if (subGridStatistics[subGridRow][subGridColumn] == null) {
+                    subGridStatistics[subGridRow][subGridColumn] = new SubGridStatistics(subGridHeight, subGridWidth);
+                }
+
                 lattice.setLatticeNode(i, j, new State(isWall, randomBit));
             }
         }
@@ -51,8 +71,6 @@ public class FHP {
         int width = (this.lattice.getWidth() / 2);
         int height = this.lattice.getHeight();
         int cell, row, col;
-        boolean[] directions = new boolean[6];
-        //List<Integer> possibleDirections = IntStream.range(0, 6).boxed().toList();
         for (int i = 0; i < this.N; ) {
             cell = cellRandom.nextInt(height * width);
             row = cell / width;
@@ -114,7 +132,7 @@ public class FHP {
                 updateNeighbors(nextLattice, outputState, i, j);
             }
         }
-        lattice.setLattice(nextLattice.getLattice());
+        lattice = nextLattice;
     }
 
     private void updateNeighbors(Lattice nextLattice, State nextState, int i, int j) {
@@ -175,13 +193,17 @@ public class FHP {
     }
 
     private void printInitialParameters() throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter("Lattice.txt"));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
         printWriter.printf("%d\n%d\n", N, D);
+        printWriter.close();
+
+        printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE));
+        printWriter.printf("%d\n%d\n%d\n%d\n%d\n%d\n", N, D, subGridHeight, subGridWidth, totalSubGrids, maxParticlesPerSubGrid);
         printWriter.close();
     }
 
     private void printLattice(boolean append) throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter("Lattice.txt", append));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE, append));
 
         Function<Boolean, Integer> booleanToInt = b -> b ? 1 : 0;
 
@@ -195,6 +217,34 @@ public class FHP {
                         booleanToInt.apply(state.getR()));
             }
         }
+        printWriter.println();
+        printWriter.close();
+    }
+
+    private void printLatticeSubGrids(boolean append) throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE, append));
+
+        for (int i = 0; i < lattice.getHeight(); i++) {
+            int subGridRow = i / subGridHeight;
+            for (int j = 0; j < lattice.getWidth(); j++) {
+                if (lattice.checkIsEmpty(i, j)) continue;
+                int subGridColumn = j / subGridWidth;
+                State state = lattice.getLatticeNode(i, j).getState();
+                subGridStatistics[subGridRow][subGridColumn].processState(state);
+            }
+        }
+
+        for (int i = 0; i < (lattice.getHeight() / subGridHeight); i++) {
+            for (int j = 0; j < (lattice.getWidth() / subGridWidth); j++) {
+                SubGridStatistics subGridStats = subGridStatistics[i][j];
+                if(!subGridStats.hasParticles()) continue;
+                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\n", i, j, subGridStats.getTotalParticles(),
+                        subGridStats.getParticlesA(), subGridStats.getParticlesB(), subGridStats.getParticlesC(),
+                        subGridStats.getParticlesD(), subGridStats.getParticlesE(), subGridStats.getParticlesF(),
+                        subGridStats.getAverageDirection().getDirection(), subGridStats.getAverageDirection().getParticles());
+            }
+        }
+
         printWriter.println();
         printWriter.close();
     }
