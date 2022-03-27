@@ -52,14 +52,14 @@ public class SubGridStatistics {
     }
 
     public DirectionStatistics getAverageDirection() {
-        List<DirectionStatistics> directionStatistics = new ArrayList<>(6);
-        directionStatistics.add(new DirectionStatistics(Direction.A, particlesA));
-        directionStatistics.add(new DirectionStatistics(Direction.B, particlesB));
-        directionStatistics.add(new DirectionStatistics(Direction.C, particlesC));
-        directionStatistics.add(new DirectionStatistics(Direction.D, particlesD));
-        directionStatistics.add(new DirectionStatistics(Direction.E, particlesE));
-        directionStatistics.add(new DirectionStatistics(Direction.F, particlesF));
-        return directionStatistics.stream().max(DirectionStatistics::compareTo).get();
+        List<DirectionStatistics> directionStatisticsList = new ArrayList<>(6);
+        directionStatisticsList.add(new DirectionStatistics(Direction.A, particlesA));
+        directionStatisticsList.add(new DirectionStatistics(Direction.B, particlesB));
+        directionStatisticsList.add(new DirectionStatistics(Direction.C, particlesC));
+        directionStatisticsList.add(new DirectionStatistics(Direction.D, particlesD));
+        directionStatisticsList.add(new DirectionStatistics(Direction.E, particlesE));
+        directionStatisticsList.add(new DirectionStatistics(Direction.F, particlesF));
+        return directionStatisticsList.stream().max(DirectionStatistics::compareTo).get();
     }
 
     public void reset() {

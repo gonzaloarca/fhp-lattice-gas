@@ -68,6 +68,7 @@ public class LatticePrinter {
                         booleanToInt.apply(state.getR()));
             }
         }
+
         printWriter.close();
     }
 
@@ -79,8 +80,10 @@ public class LatticePrinter {
             int subGridRow = i / subgridHeight;
             for (int j = 0; j < lattice.getWidth(); j++) {
                 if (lattice.checkIsEmpty(i, j)) continue;
-                int subGridColumn = j / subgridWidth;
+
                 State state = lattice.getLatticeNode(i, j).getState();
+
+                int subGridColumn = j / subgridWidth;
                 subGridStatistics[subGridRow][subGridColumn].processState(state);
             }
         }
@@ -91,10 +94,13 @@ public class LatticePrinter {
             for (int j = 0; j < (lattice.getWidth() / subgridWidth); j++) {
                 SubGridStatistics subGridStats = subGridStatistics[i][j];
                 if (!subGridStats.hasParticles()) continue;
+
+                SubGridStatistics.DirectionStatistics directionStatistics = subGridStats.getAverageDirection();
+
                 printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\n", i, j, subGridStats.getTotalParticles(),
                         subGridStats.getParticlesA(), subGridStats.getParticlesB(), subGridStats.getParticlesC(),
                         subGridStats.getParticlesD(), subGridStats.getParticlesE(), subGridStats.getParticlesF(),
-                        subGridStats.getAverageDirection().getDirection(), subGridStats.getAverageDirection().getParticles());
+                        directionStatistics.getDirection(), directionStatistics.getParticles());
             }
         }
 

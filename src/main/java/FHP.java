@@ -1,20 +1,16 @@
-import ar.edu.itba.models.*;
+import ar.edu.itba.cutCondition.CutCondition;
+import ar.edu.itba.models.Direction;
+import ar.edu.itba.models.Lattice;
+import ar.edu.itba.models.State;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
-import java.util.function.Function;
 
 public class FHP {
+    private final static int MAX_PARTICLES_PER_CELL = 6;
     private final Map<State, State> collisionLookupTable;
-    private Lattice lattice;
     private final int N;
     private final int D;
-
-
-
-    private final static int MAX_PARTICLES_PER_CELL = 6;
+    private Lattice lattice;
 
 
     public FHP(int n, int d, int latticeWidth, int latticeHeight) {
@@ -27,10 +23,11 @@ public class FHP {
         generateInitialState();
     }
 
-    public List<Lattice> run(int iterations){
-        int i = 0;
+    public List<Lattice> run(CutCondition cutCondition) {
+//        int i = 0;
         List<Lattice> lattices = new ArrayList<>();
-        while(i++ < iterations){
+//        while (cutCondition.evaluate(lattice, N, D)) {
+        for (int i = 0; i < 3; i++) {
             lattices.add(this.lattice);
             calculateAndPropagate();
         }
@@ -65,6 +62,7 @@ public class FHP {
         int width = (this.lattice.getWidth() / 2);
         int height = this.lattice.getHeight();
         int cell, row, col;
+
         for (int i = 0; i < this.N; ) {
             cell = cellRandom.nextInt(height * width);
             Direction nextDirection = Direction.values()[directionsRandom.nextInt(MAX_PARTICLES_PER_CELL)];
@@ -116,12 +114,16 @@ public class FHP {
         boolean quad2 = (a && c && d && f && !(b || e));
         boolean quad3 = (a && b && d && e && !(c || f));
 
-        boolean newA = ((a ^ (quad1 || (r && quad2) || (!r && quad3) || triple || double1 || (r && double2) || (!r && double3))) && !s) || (s && d);
-        boolean newD = ((d ^ (quad1 || (r && quad2) || (!r && quad3) || triple || double1 || (r && double2) || (!r && double3))) && !s) || (s && a);
-        boolean newB = ((b ^ (quad2 || (r && quad3) || (!r && quad1) || triple || double2 || (r && double3) || (!r && double1))) && !s) || (s && e);
-        boolean newE = ((e ^ (quad2 || (r && quad3) || (!r && quad1) || triple || double2 || (r && double3) || (!r && double1))) && !s) || (s && b);
-        boolean newC = ((c ^ (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2))) && !s) || (s && f);
-        boolean newF = ((f ^ (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2))) && !s) || (s && c);
+        boolean collision1 = (quad1 || (r && quad2) || (!r && quad3) || triple || double1 || (r && double2) || (!r && double3));
+        boolean collision2 = (quad2 || (r && quad3) || (!r && quad1) || triple || double2 || (r && double3) || (!r && double1));
+        boolean collision3 = (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2));
+
+        boolean newA = (!s && (a ^ collision1)) || (s && d);
+        boolean newD = (!s && (d ^ collision1)) || (s && a);
+        boolean newB = (!s && (b ^ collision2)) || (s && e);
+        boolean newE = (!s && (e ^ collision2)) || (s && b);
+        boolean newC = (!s && (c ^ collision3)) || (s && f);
+        boolean newF = (!s && (f ^ collision3)) || (s && c);
 
         return new State(newA, newB, newC, newD, newE, newF, s, r);
     }
@@ -131,9 +133,12 @@ public class FHP {
         for (int i = 0; i < lattice.getHeight(); i++) {
             for (int j = 0; j < lattice.getWidth(); j++) {
                 State state = lattice.getLatticeNode(i, j).getState();
-                nextLattice.setLatticeNode(i,j, new State(state.getS(), state.getR()));
-                if(lattice.checkIsEmpty(i, j)) continue;
-                State outputState = calculateOutputState(lattice.getLatticeNode(i, j).getState());
+                nextLattice.setLatticeNode(i, j, new State(state.getS(), state.getR()));
+
+                if (lattice.checkIsEmpty(i, j)) continue;
+
+                State outputState = collisionLookupTable.get(lattice.getLatticeNode(i, j).getState());
+                if (outputState == null) throw new RuntimeException("Something's not right...");
                 updateNeighbors(nextLattice, outputState, i, j);
             }
         }
@@ -154,7 +159,7 @@ public class FHP {
             nextLattice.setLatticeNodeDirection(i, j - 1, Direction.D, nodeState.getS(), nodeState.getR());
         }
 
-        boolean oddRow = (i & 1) == 1;
+        boolean oddRow = (i % 2) == 1;
 
         if (nextState.getB()) {
             if (oddRow) {
