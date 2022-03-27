@@ -1,7 +1,12 @@
 import ar.edu.itba.models.Lattice;
+import ar.edu.itba.models.Node;
 import ar.edu.itba.models.State;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -11,7 +16,7 @@ public class FHP {
     private final int N;
     private final int D;
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight) {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight) throws IOException {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
@@ -99,5 +104,98 @@ public class FHP {
         boolean newF = f ^ ((triple || double3 || (r && double1) || (!r && double2)) && !s);
 
         return new State(newA, newB, newC, newD, newE, newF, s, r);
+    }
+
+    private void nextLatticeState() {
+        Lattice nextLattice = new Lattice(lattice.getWidth(), lattice.getHeight());
+        for (int i = 0; i < lattice.getHeight(); i++) {
+            for (int j = 0; j < lattice.getWidth(); j++) {
+                State outputState = calculateOutputState(lattice.getLatticeNode(i, j).getState());
+                updateNeighbors(nextLattice, outputState, i, j);
+            }
+        }
+        lattice.setLattice(nextLattice.getLattice());
+    }
+
+    private void updateNeighbors(Lattice nextLattice, State nextState, int i, int j) {
+
+        State nodeState;
+
+        if (nextState.getA()) {
+            nodeState = lattice.getLatticeNode(i, j + 1).getState();
+            nextLattice.setLatticeNodeDirection(i, j + 1, Direction.A, nodeState.getS(), nodeState.getR());
+        }
+
+        if (nextState.getD()) {
+            nodeState = lattice.getLatticeNode(i, j - 1).getState();
+            nextLattice.setLatticeNodeDirection(i, j - 1, Direction.D, nodeState.getS(), nodeState.getR());
+        }
+
+        boolean oddRow = i % 2 == 1;
+
+        if (nextState.getB()) {
+            if (oddRow) {
+                nodeState = lattice.getLatticeNode(i - 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.B, nodeState.getS(), nodeState.getR());
+            } else {
+                nodeState = lattice.getLatticeNode(i - 1, j + 1).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j + 1, Direction.B, nodeState.getS(), nodeState.getR());
+            }
+        }
+
+        if (nextState.getC()) {
+            if (oddRow) {
+                nodeState = lattice.getLatticeNode(i - 1, j - 1).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j - 1, Direction.C, nodeState.getS(), nodeState.getR());
+            } else {
+                nodeState = lattice.getLatticeNode(i - 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.C, nodeState.getS(), nodeState.getR());
+            }
+        }
+
+        if (nextState.getE()) {
+            if (oddRow) {
+                nodeState = lattice.getLatticeNode(i + 1, j - 1).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j - 1, Direction.E, nodeState.getS(), nodeState.getR());
+            } else {
+                nodeState = lattice.getLatticeNode(i + 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.E, nodeState.getS(), nodeState.getR());
+            }
+        }
+
+        if (nextState.getF()) {
+            if (oddRow) {
+                nodeState = lattice.getLatticeNode(i + 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.F, nodeState.getS(), nodeState.getR());
+            } else {
+                nodeState = lattice.getLatticeNode(i + 1, j + 1).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.F, nodeState.getS(), nodeState.getR());
+            }
+        }
+    }
+
+    private void printInitialParameters() throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter("Lattice.txt"));
+        printWriter.printf("%d\n%d\n", N, D);
+        printWriter.close();
+    }
+
+    private void printLattice(boolean append) throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter("Lattice.txt", append));
+
+        Function<Boolean, Integer> booleanToInt = b -> b ? 1 : 0;
+
+        for (int i = 0; i < lattice.getHeight(); i++) {
+            for (int j = 0; j < lattice.getWidth(); j++) {
+                if (lattice.checkIsEmpty(i, j)) continue;
+                State state = lattice.getLatticeNode(i, j).getState();
+                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, booleanToInt.apply(state.getA()),
+                        booleanToInt.apply(state.getB()), booleanToInt.apply(state.getC()), booleanToInt.apply(state.getD()),
+                        booleanToInt.apply(state.getE()), booleanToInt.apply(state.getF()), booleanToInt.apply(state.getS()),
+                        booleanToInt.apply(state.getR()));
+            }
+        }
+        printWriter.println();
+        printWriter.close();
     }
 }

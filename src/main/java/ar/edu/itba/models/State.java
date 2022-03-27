@@ -98,6 +98,10 @@ public class State {
         return A && B && C && D && E && F;
     }
 
+    public boolean isEmpty() {
+        return !(A || B || C || D || E || F);
+    }
+
     public String toString() {
         return "A: " + A + " B: " + B + " C: " + C + " D: " + D + " E: " + E + " F: " + F + " S: " + S + " R: " + R;
     }

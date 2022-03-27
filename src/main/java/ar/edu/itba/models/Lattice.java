@@ -1,10 +1,7 @@
 package ar.edu.itba.models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Lattice {
-    private final Node[][] lattice;
+    private Node[][] lattice;
     private final int height;
     private final int width;
 
@@ -14,8 +11,20 @@ public class Lattice {
         this.lattice = new Node[height][width];
     }
 
+    public void setLattice(Node[][] lattice) {
+        this.lattice = lattice;
+    }
+
+    public Node[][] getLattice() {
+        return lattice;
+    }
+
+    public Node getLatticeNode(int i, int j) {
+        return lattice[i][j];
+    }
+
     public void setLatticeNode(int i, int j, State state) {
-        this.lattice[i][j] = new Node(state);
+        lattice[i][j] = new Node(state);
     }
 
     public int getHeight() {
