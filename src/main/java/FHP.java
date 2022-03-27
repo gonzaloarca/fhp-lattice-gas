@@ -1,6 +1,4 @@
-import ar.edu.itba.models.Lattice;
-import ar.edu.itba.models.Node;
-import ar.edu.itba.models.State;
+import ar.edu.itba.models.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,30 +8,33 @@ import java.util.function.Function;
 
 public class FHP {
     private final Map<State, State> collisionLookupTable;
-    private final Lattice lattice;
+    private Lattice lattice;
     private final int N;
     private final int D;
-    private final SubGridStatistics[][] subGridStatistics;
-    private final int totalSubGrids;
-    private final int maxParticlesPerSubGrid;
-    private final int subGridHeight;
-    private final int subGridWidth;
+
 
 
     private final static int MAX_PARTICLES_PER_CELL = 6;
 
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight, int subGridHeight, int subGridWidth) throws IOException {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight) {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
-        this.totalSubGrids = (latticeHeight / subGridHeight) * (latticeWidth / subGridWidth);
-        this.maxParticlesPerSubGrid = subGridHeight * subGridWidth * MAX_PARTICLES_PER_CELL;
-        this.subGridStatistics = new SubGridStatistics[latticeHeight / subGridHeight][latticeWidth / subGridWidth];
-        this.subGridHeight = subGridHeight;
-        this.subGridWidth = subGridWidth;
         initializeCollisionLookupTable();
+        generateLatticeSpace();
+        generateInitialState();
+    }
+
+    public List<Lattice> run(int iterations){
+        int i = 0;
+        List<Lattice> lattices = new ArrayList<>();
+        while(i++ < iterations){
+            lattices.add(this.lattice);
+            calculateAndPropagate();
+        }
+        return lattices;
     }
 
     //generate walls and non-walls
@@ -66,10 +67,14 @@ public class FHP {
         int cell, row, col;
         for (int i = 0; i < this.N; ) {
             cell = cellRandom.nextInt(height * width);
+            Direction nextDirection = Direction.values()[directionsRandom.nextInt(MAX_PARTICLES_PER_CELL)];
             row = cell / width;
             col = cell % width;
+            if (lattice.checkIsWall(row, col) || lattice.checkIsFull(row, col) || lattice.checkLatticeNodeDirection(row, col, nextDirection))
+                continue;
 
-            if ((row == 0 && col == 0) || (row == width))
+            lattice.setLatticeNodeDirection(row, col, nextDirection);
+            i++;
         }
     }
 
@@ -81,7 +86,7 @@ public class FHP {
         for (int i = 0; i < State.getMaxStates(); i++) {
             stateValues = new boolean[8];
 
-            for (int j = 7; j > 0; j--) {
+            for (int j = 0; j < 8; j++) {
                 stateValues[j] = (i & (1 << j)) != 0;
             }
 
@@ -107,17 +112,21 @@ public class FHP {
 
         boolean triple = (a ^ b) && (b ^ c) && (c ^ d) && (d ^ e) && (e ^ f);
 
-        boolean newA = a ^ ((triple || double1 || (r && double2) || (!r && double3)) && !s);
-        boolean newD = d ^ ((triple || double1 || (r && double2) || (!r && double3)) && !s);
-        boolean newB = b ^ ((triple || double2 || (r && double3) || (!r && double1)) && !s);
-        boolean newE = e ^ ((triple || double2 || (r && double3) || (!r && double1)) && !s);
-        boolean newC = c ^ ((triple || double3 || (r && double1) || (!r && double2)) && !s);
-        boolean newF = f ^ ((triple || double3 || (r && double1) || (!r && double2)) && !s);
+        boolean quad1 = (b && c && e && f && !(a || d));
+        boolean quad2 = (a && c && d && f && !(b || e));
+        boolean quad3 = (a && b && d && e && !(c || f));
+
+        boolean newA = ((a ^ (quad1 || (r && quad2) || (!r && quad3) || triple || double1 || (r && double2) || (!r && double3))) && !s) || (s && d);
+        boolean newD = ((d ^ (quad1 || (r && quad2) || (!r && quad3) || triple || double1 || (r && double2) || (!r && double3))) && !s) || (s && a);
+        boolean newB = ((b ^ (quad2 || (r && quad3) || (!r && quad1) || triple || double2 || (r && double3) || (!r && double1))) && !s) || (s && e);
+        boolean newE = ((e ^ (quad2 || (r && quad3) || (!r && quad1) || triple || double2 || (r && double3) || (!r && double1))) && !s) || (s && b);
+        boolean newC = ((c ^ (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2))) && !s) || (s && f);
+        boolean newF = ((f ^ (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2))) && !s) || (s && c);
 
         return new State(newA, newB, newC, newD, newE, newF, s, r);
     }
 
-    private void nextLatticeState() {
+    private void calculateAndPropagate() {
         Lattice nextLattice = new Lattice(lattice.getWidth(), lattice.getHeight());
         for (int i = 0; i < lattice.getHeight(); i++) {
             for (int j = 0; j < lattice.getWidth(); j++) {

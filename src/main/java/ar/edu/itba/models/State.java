@@ -26,6 +26,17 @@ public class State {
         R = r;
     }
 
+    public State(boolean s, boolean r) {
+        S = s;
+        R = r;
+        A = false;
+        B = false;
+        C = false;
+        D = false;
+        E = false;
+        F = false;
+    }
+
     public static int getMaxStates() {
         return MAX_STATES;
     }
