@@ -19,8 +19,7 @@ public class FHP {
     private final int subGridHeight;
     private final int subGridWidth;
 
-    private final static String LATTICE_FILE = "Lattice.txt";
-    private final static String LATTICE_SUBGRIDS_FILE = "LatticeSubGrids.txt";
+
     private final static int MAX_PARTICLES_PER_CELL = 6;
 
 
@@ -45,19 +44,13 @@ public class FHP {
         boolean isWall;
         boolean randomBit;
         for (int i = 0; i < height; i++) {
-            int subGridRow = i / subGridHeight;
             for (int j = 0; j < width; j++) {
-                int subGridColumn = j / subGridWidth;
                 randomBit = random.nextBoolean();
                 isWall = j == 0 || j == width - 1 || i == 0 || i == height - 1;
 
                 // for middle wall with slit
                 if (j == width / 2 && (i < (height - D) / 2 || i > (height + D) / 2)) {
                     isWall = true;
-                }
-
-                if (subGridStatistics[subGridRow][subGridColumn] == null) {
-                    subGridStatistics[subGridRow][subGridColumn] = new SubGridStatistics(subGridHeight, subGridWidth);
                 }
 
                 lattice.setLatticeNode(i, j, new State(isWall, randomBit));
@@ -128,6 +121,9 @@ public class FHP {
         Lattice nextLattice = new Lattice(lattice.getWidth(), lattice.getHeight());
         for (int i = 0; i < lattice.getHeight(); i++) {
             for (int j = 0; j < lattice.getWidth(); j++) {
+                State state = lattice.getLatticeNode(i, j).getState();
+                nextLattice.setLatticeNode(i,j, new State(state.getS(), state.getR()));
+                if(lattice.checkIsEmpty(i, j)) continue;
                 State outputState = calculateOutputState(lattice.getLatticeNode(i, j).getState());
                 updateNeighbors(nextLattice, outputState, i, j);
             }
@@ -149,7 +145,7 @@ public class FHP {
             nextLattice.setLatticeNodeDirection(i, j - 1, Direction.D, nodeState.getS(), nodeState.getR());
         }
 
-        boolean oddRow = i % 2 == 1;
+        boolean oddRow = (i & 1) == 1;
 
         if (nextState.getB()) {
             if (oddRow) {
@@ -190,62 +186,5 @@ public class FHP {
                 nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.F, nodeState.getS(), nodeState.getR());
             }
         }
-    }
-
-    private void printInitialParameters() throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
-        printWriter.printf("%d\n%d\n", N, D);
-        printWriter.close();
-
-        printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE));
-        printWriter.printf("%d\n%d\n%d\n%d\n%d\n%d\n", N, D, subGridHeight, subGridWidth, totalSubGrids, maxParticlesPerSubGrid);
-        printWriter.close();
-    }
-
-    private void printLattice(boolean append) throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE, append));
-
-        Function<Boolean, Integer> booleanToInt = b -> b ? 1 : 0;
-
-        for (int i = 0; i < lattice.getHeight(); i++) {
-            for (int j = 0; j < lattice.getWidth(); j++) {
-                if (lattice.checkIsEmpty(i, j)) continue;
-                State state = lattice.getLatticeNode(i, j).getState();
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, booleanToInt.apply(state.getA()),
-                        booleanToInt.apply(state.getB()), booleanToInt.apply(state.getC()), booleanToInt.apply(state.getD()),
-                        booleanToInt.apply(state.getE()), booleanToInt.apply(state.getF()), booleanToInt.apply(state.getS()),
-                        booleanToInt.apply(state.getR()));
-            }
-        }
-        printWriter.println();
-        printWriter.close();
-    }
-
-    private void printLatticeSubGrids(boolean append) throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE, append));
-
-        for (int i = 0; i < lattice.getHeight(); i++) {
-            int subGridRow = i / subGridHeight;
-            for (int j = 0; j < lattice.getWidth(); j++) {
-                if (lattice.checkIsEmpty(i, j)) continue;
-                int subGridColumn = j / subGridWidth;
-                State state = lattice.getLatticeNode(i, j).getState();
-                subGridStatistics[subGridRow][subGridColumn].processState(state);
-            }
-        }
-
-        for (int i = 0; i < (lattice.getHeight() / subGridHeight); i++) {
-            for (int j = 0; j < (lattice.getWidth() / subGridWidth); j++) {
-                SubGridStatistics subGridStats = subGridStatistics[i][j];
-                if(!subGridStats.hasParticles()) continue;
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\n", i, j, subGridStats.getTotalParticles(),
-                        subGridStats.getParticlesA(), subGridStats.getParticlesB(), subGridStats.getParticlesC(),
-                        subGridStats.getParticlesD(), subGridStats.getParticlesE(), subGridStats.getParticlesF(),
-                        subGridStats.getAverageDirection().getDirection(), subGridStats.getAverageDirection().getParticles());
-            }
-        }
-
-        printWriter.println();
-        printWriter.close();
     }
 }
