@@ -62,6 +62,16 @@ public class SubGridStatistics {
         return directionStatistics.stream().max(DirectionStatistics::compareTo).get();
     }
 
+    public void reset() {
+        totalParticles = 0;
+        particlesA = 0;
+        particlesB = 0;
+        particlesC = 0;
+        particlesD = 0;
+        particlesE = 0;
+        particlesF = 0;
+    }
+
     public void addParticleA() {
         particlesA++;
         totalParticles++;
