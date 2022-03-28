@@ -37,6 +37,6 @@ if __name__ == '__main__':
               current_directions = [direction for direction in line_data[2:8] if int(direction) == 1]
               sum_val = len(current_directions)
               for i in range(sum_val):
-                  xyz_file.write(f'{line_data[0]}\t{line_data[1]}\t0\n')
+                  xyz_file.write(f'{(line_data[0] if int(line_data[0]) % 2 == 0 else int(line_data[0])+0.5)}\t{int(line_data[1])*0.866}\t0\n')
 
     xyz_file.close()
