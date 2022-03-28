@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class State {
 
-    private static int MAX_STATES = 256;
+    private static int MAX_STATES = 512;
 
     private boolean A;
     private boolean B;
@@ -12,22 +12,25 @@ public class State {
     private boolean D;
     private boolean E;
     private boolean F;
-    private boolean S;
+    private boolean XS;
+    private boolean YS;
     private boolean R;
 
-    public State(boolean a, boolean b, boolean c, boolean d, boolean e, boolean f, boolean s, boolean r) {
+    public State(boolean a, boolean b, boolean c, boolean d, boolean e, boolean f, boolean xs,boolean ys, boolean r) {
         A = a;
         B = b;
         C = c;
         D = d;
         E = e;
         F = f;
-        S = s;
+        XS = xs;
+        YS = ys;
         R = r;
     }
 
-    public State(boolean s, boolean r) {
-        S = s;
+    public State(boolean xs,boolean ys, boolean r) {
+        XS = xs;
+        YS = ys;
         R = r;
         A = false;
         B = false;
@@ -89,12 +92,20 @@ public class State {
         F = f;
     }
 
-    public boolean getS() {
-        return this.S;
+    public boolean getXS() {
+        return this.XS;
     }
 
-    public void setS(boolean s) {
-        S = s;
+    public void setXS(boolean xs) {
+        XS = xs;
+    }
+    
+    public boolean getYS() {
+        return this.YS;
+    }
+
+    public void setYS(boolean ys) {
+        YS = ys;
     }
 
     public boolean getR() {
@@ -114,7 +125,7 @@ public class State {
     }
 
     public String toString() {
-        return "A: " + A + " B: " + B + " C: " + C + " D: " + D + " E: " + E + " F: " + F + " S: " + S + " R: " + R;
+        return "A: " + A + " B: " + B + " C: " + C + " D: " + D + " E: " + E + " F: " + F + " XS: " + XS + " YS: " + YS + " R: " + R;
     }
 
     @Override
@@ -122,11 +133,11 @@ public class State {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         State state = (State) o;
-        return A == state.A && B == state.B && C == state.C && D == state.D && E == state.E && F == state.F && S == state.S && R == state.R;
+        return A == state.A && B == state.B && C == state.C && D == state.D && E == state.E && F == state.F && XS == state.XS && YS == state.YS && R == state.R;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(A, B, C, D, E, F, S, R);
+        return Objects.hash(A, B, C, D, E, F, XS, YS, R);
     }
 }

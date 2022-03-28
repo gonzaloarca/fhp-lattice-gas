@@ -37,3 +37,6 @@ replay_pid*
 # Maven
 log/
 target/
+
+# xyz files
+*.xyz

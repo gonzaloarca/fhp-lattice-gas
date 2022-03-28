@@ -62,10 +62,10 @@ public class LatticePrinter {
             for (int j = 0; j < lattice.getWidth(); j++) {
                 if (lattice.checkIsEmpty(i, j)) continue;
                 State state = lattice.getLatticeNode(i, j).getState();
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, booleanToInt.apply(state.getA()),
+                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, booleanToInt.apply(state.getA()),
                         booleanToInt.apply(state.getB()), booleanToInt.apply(state.getC()), booleanToInt.apply(state.getD()),
-                        booleanToInt.apply(state.getE()), booleanToInt.apply(state.getF()), booleanToInt.apply(state.getS()),
-                        booleanToInt.apply(state.getR()));
+                        booleanToInt.apply(state.getE()), booleanToInt.apply(state.getF()), booleanToInt.apply(state.getXS()),
+                        booleanToInt.apply(state.getYS()), booleanToInt.apply(state.getR()));
             }
         }
 

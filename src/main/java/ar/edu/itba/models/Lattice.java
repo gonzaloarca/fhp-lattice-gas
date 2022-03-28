@@ -27,9 +27,9 @@ public class Lattice {
         lattice[i][j] = new Node(state);
     }
 
-    public void setLatticeNodeDirection(int i, int j, Direction direction, boolean s, boolean r) {
+    public void setLatticeNodeDirection(int i, int j, Direction direction, boolean xs, boolean ys, boolean r) {
         if (lattice[i][j] == null) {
-            lattice[i][j] = new Node(new State(s, r));
+            lattice[i][j] = new Node(new State(xs, ys, r));
         }
 
         State state = lattice[i][j].getState();
@@ -46,18 +46,12 @@ public class Lattice {
     public void setLatticeNodeDirection(int i, int j, Direction direction) {
         State state = this.lattice[i][j].getState();
         switch (direction) {
-            case A:
-                state.setA(true);
-            case B:
-                state.setB(true);
-            case C:
-                state.setC(true);
-            case D:
-                state.setD(true);
-            case E:
-                state.setE(true);
-            case F:
-                state.setF(true);
+            case A -> state.setA(true);
+            case B -> state.setB(true);
+            case C -> state.setC(true);
+            case D -> state.setD(true);
+            case E -> state.setE(true);
+            case F -> state.setF(true);
         }
     }
 
@@ -75,7 +69,7 @@ public class Lattice {
     }
 
     public boolean checkIsWall(int i, int j) {
-        return lattice[i][j].getState().getS();
+        return lattice[i][j].getState().getXS() || lattice[i][j].getState().getYS();
     }
 
     public boolean checkIsFull(int i, int j) {
