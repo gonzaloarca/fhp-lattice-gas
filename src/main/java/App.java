@@ -1,4 +1,5 @@
 import ar.edu.itba.cutCondition.ParticleFlow;
+import ar.edu.itba.cutCondition.ParticlePerSide;
 import ar.edu.itba.helpers.LatticePrinter;
 import ar.edu.itba.models.Lattice;
 
@@ -13,13 +14,8 @@ public class App {
         latticeHeight = latticeWidth = 200;
         int subGridHeight, subGridWidth;
         subGridHeight = subGridWidth = 20;
-        FHP fhpLatticeGas = new FHP(N, D, latticeWidth, latticeHeight);
-        List<Lattice> lattices = fhpLatticeGas.run(new ParticleFlow());
-        LatticePrinter latticePrinter = new LatticePrinter(latticeHeight, latticeWidth, subGridHeight, subGridWidth, N, D);
-        latticePrinter.printInitialParameters();
-        for (int i = 0; i < lattices.size(); i++) {
-            latticePrinter.printLattice(lattices.get(i), i, true);
-            latticePrinter.printLatticeSubGrids(lattices.get(i), i, true);
-        }
+        FHP fhpLatticeGas = new FHP(N, D, latticeWidth, latticeHeight, subGridWidth, subGridHeight);
+//        fhpLatticeGas.run(new ParticlePerSide(latticeWidth, latticeHeight, 0.1));
+        fhpLatticeGas.run(new ParticleFlow());
     }
 }

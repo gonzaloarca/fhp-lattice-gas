@@ -1,8 +1,10 @@
 import ar.edu.itba.cutCondition.CutCondition;
+import ar.edu.itba.helpers.LatticePrinter;
 import ar.edu.itba.models.Direction;
 import ar.edu.itba.models.Lattice;
 import ar.edu.itba.models.State;
 
+import java.io.IOException;
 import java.util.*;
 
 public class FHP {
@@ -11,27 +13,34 @@ public class FHP {
     private final int N;
     private final int D;
     private Lattice lattice;
+    private final int subGridHeight;
+    private final int subGridWidth;
 
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight) {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight, int subGridWidth, int subGridHeight) {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
+        this.subGridWidth = subGridWidth;
+        this.subGridHeight = subGridHeight;
         initializeCollisionLookupTable();
         generateLatticeSpace();
         generateInitialState();
     }
 
-    public List<Lattice> run(CutCondition cutCondition) {
-//        int i = 0;
-        List<Lattice> lattices = new ArrayList<>();
-//        while (cutCondition.evaluate(lattice, N, D)) {
-        for (int i = 0; i < 1000; i++) {
-            lattices.add(this.lattice);
+    public void run(CutCondition cutCondition) throws IOException {
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
+        latticePrinter.printInitialParameters();
+        int iteration = 0;
+        while (!cutCondition.evaluate(lattice, N, D)) {
+//        for (int i = 0; i < 1000; i++) {
+            latticePrinter.printLattice(lattice, iteration, true);
+            latticePrinter.printLatticeSubGrids(lattice, iteration, true);
             calculateAndPropagate();
+            iteration++;
         }
-        return lattices;
+        System.out.println("Iterations: " + iteration);
     }
 
     //generate walls and non-walls
@@ -47,7 +56,7 @@ public class FHP {
                 randomBit = random.nextBoolean();
                 isYWall = j == 0 || (j == width / 2 && (i < (height - D) / 2 || i > (height + D) / 2)) || j == width - 1;
                 isXWall = i == 0 || i == height - 1;
-                lattice.setLatticeNode(i, j, new State(isXWall,isYWall, randomBit));
+                lattice.setLatticeNode(i, j, new State(isXWall, isYWall, randomBit));
             }
         }
     }
@@ -119,7 +128,7 @@ public class FHP {
         boolean collision3 = (quad3 || (r && quad1) || (!r && quad2) || triple || double3 || (r && double1) || (!r && double2));
 
         boolean newA = (!s && (a ^ collision1)) || (ys && d);
-        boolean newD = (!s && (d ^ collision1)) || (ys && a); 
+        boolean newD = (!s && (d ^ collision1)) || (ys && a);
         boolean newB = (!s && (b ^ collision2)) || ((xs ^ ys) && ((xs && f) || (ys && c))) || (corner && e);
         boolean newE = (!s && (e ^ collision2)) || ((xs ^ ys) && ((xs && c) || (ys && f))) || (corner && b);
         boolean newC = (!s && (c ^ collision3)) || ((xs ^ ys) && ((xs && e) || (ys && b))) || (corner && f);
@@ -134,7 +143,7 @@ public class FHP {
             for (int j = 0; j < lattice.getWidth(); j++) {
                 State state = lattice.getLatticeNode(i, j).getState();
 
-                if (nextLattice.checkIsEmpty(i,j)){
+                if (nextLattice.checkIsEmpty(i, j)) {
                     nextLattice.setLatticeNode(i, j, new State(state.getXS(), state.getYS(), state.getR()));
                 }
 
@@ -161,7 +170,7 @@ public class FHP {
 
         if (nextState.getD()) {
             nodeState = lattice.getLatticeNode(i, j - 1).getState();
-            nextLattice.setLatticeNodeDirection(i, j - 1, Direction.D, nodeState.getXS(),nodeState.getYS(), nodeState.getR());
+            nextLattice.setLatticeNodeDirection(i, j - 1, Direction.D, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
         }
 
         boolean oddRow = (i % 2) == 1;
@@ -169,40 +178,40 @@ public class FHP {
         if (nextState.getB()) {
             if (oddRow) {
                 nodeState = lattice.getLatticeNode(i - 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.B,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
                 nodeState = lattice.getLatticeNode(i - 1, j + 1).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j + 1, Direction.B,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i - 1, j + 1, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getC()) {
             if (oddRow) {
                 nodeState = lattice.getLatticeNode(i - 1, j - 1).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j - 1, Direction.C,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i - 1, j - 1, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
                 nodeState = lattice.getLatticeNode(i - 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.C,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getE()) {
             if (oddRow) {
                 nodeState = lattice.getLatticeNode(i + 1, j - 1).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j - 1, Direction.E,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i + 1, j - 1, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
                 nodeState = lattice.getLatticeNode(i + 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.E,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getF()) {
             if (oddRow) {
                 nodeState = lattice.getLatticeNode(i + 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.F,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
                 nodeState = lattice.getLatticeNode(i + 1, j + 1).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.F,  nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
     }

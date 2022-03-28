@@ -18,7 +18,6 @@ if __name__ == '__main__':
     # comment
     # xi yi 0
 
-
     with args.lattice_steps as lattice_steps_file:
         lines = lattice_steps_file.readlines()
         N = int(lines[0].split()[0])
