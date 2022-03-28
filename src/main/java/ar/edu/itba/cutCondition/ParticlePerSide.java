@@ -13,7 +13,7 @@ public class ParticlePerSide implements CutCondition {
         this.latticeHeight = latticeHeight;
         if (error > 1 && error < 100) {
             this.threshold = error / 100;
-        } else if(error > 0 && error <= 1) {
+        } else if (error > 0 && error <= 1) {
             this.threshold = error;
         } else {
             throw new IllegalArgumentException("Invalid error value. Must be in percentage or probability.");
@@ -25,16 +25,16 @@ public class ParticlePerSide implements CutCondition {
 
         int leftLatticeParticles = 0;
 
-        for(int i = 0; i < latticeHeight; i++) {
-            for(int j = 0; j < latticeWidth / 2; j++) {
+        for (int i = 0; i < latticeHeight; i++) {
+            for (int j = 0; j < latticeWidth / 2; j++) {
                 leftLatticeParticles += lattice.getLatticeNode(i, j).getParticleCount();
             }
         }
 
         int rightLatticeParticles = 0;
 
-        for(int i = 0; i < latticeHeight; i++) {
-            for(int j = latticeWidth / 2; j < latticeWidth; j++) {
+        for (int i = 0; i < latticeHeight; i++) {
+            for (int j = latticeWidth / 2; j < latticeWidth; j++) {
                 rightLatticeParticles += lattice.getLatticeNode(i, j).getParticleCount();
             }
         }

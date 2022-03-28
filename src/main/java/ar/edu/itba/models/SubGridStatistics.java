@@ -138,7 +138,7 @@ public class SubGridStatistics {
         return particlesF;
     }
 
-    public class DirectionStatistics implements Comparable<DirectionStatistics>{
+    public class DirectionStatistics implements Comparable<DirectionStatistics> {
         private final Direction direction;
         private final int particles;
 

@@ -2,11 +2,11 @@ package ar.edu.itba.cutCondition;
 
 import ar.edu.itba.models.Lattice;
 
-public class ParticleFlow implements CutCondition {
+public class SlitParticleFlow implements CutCondition {
 
     private int previousFlow;
 
-    public ParticleFlow() {
+    public SlitParticleFlow() {
         this.previousFlow = 0;
     }
 

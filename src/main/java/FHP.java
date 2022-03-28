@@ -5,16 +5,18 @@ import ar.edu.itba.models.Lattice;
 import ar.edu.itba.models.State;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class FHP {
     private final static int MAX_PARTICLES_PER_CELL = 6;
     private final Map<State, State> collisionLookupTable;
     private final int N;
     private final int D;
-    private Lattice lattice;
     private final int subGridHeight;
     private final int subGridWidth;
+    private Lattice lattice;
 
 
     public FHP(int n, int d, int latticeWidth, int latticeHeight, int subGridWidth, int subGridHeight) {
@@ -70,13 +72,13 @@ public class FHP {
 
         for (int i = 0; i < this.N; ) {
             cell = cellRandom.nextInt(height * width);
-            Direction nextDirection = Direction.values()[directionsRandom.nextInt(MAX_PARTICLES_PER_CELL)];
+            Direction newDirection = Direction.values()[directionsRandom.nextInt(MAX_PARTICLES_PER_CELL)];
             row = cell / width;
             col = cell % width;
-            if (lattice.checkIsWall(row, col) || lattice.checkIsFull(row, col) || lattice.checkLatticeNodeDirection(row, col, nextDirection))
+            if (lattice.checkIsWall(row, col) || lattice.checkIsFull(row, col) || lattice.checkLatticeNodeDirection(row, col, newDirection))
                 continue;
 
-            lattice.setLatticeNodeDirection(row, col, nextDirection);
+            lattice.setLatticeNodeDirection(row, col, newDirection);
             i++;
         }
     }

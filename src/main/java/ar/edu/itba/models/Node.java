@@ -7,9 +7,9 @@ public class Node {
         this.state = state;
     }
 
-    public int getParticleCount(){
+    public int getParticleCount() {
         int count = 0;
-        if(this.state.getA()) count++;
+        if (this.state.getA()) count++;
         if (this.state.getB()) count++;
         if (this.state.getC()) count++;
         if (this.state.getD()) count++;

@@ -17,6 +17,8 @@ public class LatticePrinter {
 
     private final int N;
     private final int D;
+    private final int latticeHeight;
+    private final int latticeWidth;
     private final int subgridHeight;
     private final int subgridWidth;
     private final SubGridStatistics[][] subGridStatistics;
@@ -27,6 +29,8 @@ public class LatticePrinter {
     public LatticePrinter(int latticeHeight, int latticeWidth, int subGridHeight, int subGridWidth, int n, int d) {
         this.N = n;
         this.D = d;
+        this.latticeHeight = latticeHeight;
+        this.latticeWidth = latticeWidth;
         this.subgridHeight = subGridHeight;
         this.subgridWidth = subGridWidth;
         this.totalSubGrids = (latticeHeight / subGridHeight) * (latticeWidth / subGridWidth);
@@ -43,11 +47,11 @@ public class LatticePrinter {
 
     public void printInitialParameters() throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
-        printWriter.printf("%d\n%d\n", N, D);
+        printWriter.printf("%d\n%d\n%d\t%d\n", N, D, latticeHeight, latticeWidth);
         printWriter.close();
 
         printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE));
-        printWriter.printf("%d\n%d\n%d\n%d\n%d\n%d\n", N, D, subgridHeight, subgridWidth, totalSubGrids, maxParticlesPerSubGrid);
+        printWriter.printf("%d\n%d\n%d\t%d\n%d\t%d\n%d\n%d\n", N, D, latticeHeight, latticeWidth, subgridHeight, subgridWidth, totalSubGrids, maxParticlesPerSubGrid);
         printWriter.close();
     }
 
@@ -58,11 +62,11 @@ public class LatticePrinter {
 
         printWriter.println(step);
 
-        for (int i = 0; i < lattice.getHeight(); i++) {
-            for (int j = 0; j < lattice.getWidth(); j++) {
-                if (lattice.checkIsEmpty(i, j)) continue;
-                State state = lattice.getLatticeNode(i, j).getState();
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, j, booleanToInt.apply(state.getA()),
+        for (int y = 0; y < lattice.getHeight(); y++) {
+            for (int x = 0; x < lattice.getWidth(); x++) {
+                if (lattice.checkIsEmpty(y, x)) continue;
+                State state = lattice.getLatticeNode(y, x).getState();
+                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", x, y, booleanToInt.apply(state.getA()),
                         booleanToInt.apply(state.getB()), booleanToInt.apply(state.getC()), booleanToInt.apply(state.getD()),
                         booleanToInt.apply(state.getE()), booleanToInt.apply(state.getF()), booleanToInt.apply(state.getXS()),
                         booleanToInt.apply(state.getYS()), booleanToInt.apply(state.getR()));
