@@ -116,6 +116,22 @@ public class State {
         R = r;
     }
 
+    public int getRightFlow() {
+        int flow = 0;
+        if(D) flow++;
+        if(E) flow++;
+        if(C) flow++;
+        return flow;
+    }
+
+    public int getLeftFlow() {
+        int flow = 0;
+        if(B) flow++;
+        if(A) flow++;
+        if(F) flow++;
+        return flow;
+    }
+
     public boolean isFull() {
         return A && B && C && D && E && F;
     }

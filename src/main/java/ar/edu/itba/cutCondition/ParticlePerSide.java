@@ -8,13 +8,13 @@ public class ParticlePerSide implements CutCondition {
     private final int latticeHeight;
     private final double threshold;
 
-    public ParticlePerSide(int latticeWidth, int latticeHeight, double error) {
+    public ParticlePerSide(int latticeWidth, int latticeHeight, double threshold) {
         this.latticeWidth = latticeWidth;
         this.latticeHeight = latticeHeight;
-        if (error > 1 && error < 100) {
-            this.threshold = error / 100;
-        } else if (error > 0 && error <= 1) {
-            this.threshold = error;
+        if (threshold > 1 && threshold < 100) {
+            this.threshold = threshold / 100;
+        } else if (threshold > 0 && threshold <= 1) {
+            this.threshold = threshold;
         } else {
             throw new IllegalArgumentException("Invalid error value. Must be in percentage or probability.");
         }
