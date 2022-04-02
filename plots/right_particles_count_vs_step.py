@@ -16,17 +16,19 @@ def variate_particles(cut_condition_name, threshold):
             right_particles = right_particles_file.readlines()
 
             steps = []
+            time_steps = []
             right_particles_count = []
 
             for line in right_particles:
                 line_data = line.split("\t")
 
                 steps.append(int(line_data[0]))
-                right_particles_count.append(int(line_data[1]))
+                time_steps.append(int(line_data[1]))
+                right_particles_count.append(int(line_data[2]))
 
-            plot.plot(steps, right_particles_count)
+            plot.plot(time_steps, right_particles_count)
 
-    plot.xlabel("Número de iteración")
+    plot.xlabel("Tiempo de ejecución (ms)")
     plot.ylabel("Cantidad de particulas en el recinto derecho")
 
     plot.legend(["2000 particulas", "3000 particulas", "5000 particulas"])
@@ -59,7 +61,7 @@ def variate_slit_width(cut_condition_name, threshold, slit_width_step):
 
             plot.plot(steps, right_particles_count)
 
-    plot.xlabel("Número de iteración")
+    plot.xlabel("Tiempo de ejecución (ms)")
     plot.ylabel("Cantidad de particulas en el recinto derecho")
 
     plot.legend([f"{slit_width} nodos de ancho" for slit_width in slit_widths])
