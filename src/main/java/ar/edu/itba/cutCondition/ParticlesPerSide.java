@@ -6,14 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class ParticlePerSide implements CutCondition {
+public class ParticlesPerSide implements CutCondition {
 
     private final int latticeWidth;
     private final int latticeHeight;
     private final double threshold;
-    private static final String PARTICLE_PER_SIDE_FILE = "ParticlePerSide.txt";
+    private static final String RIGHT_PARTICLES_FILE = "RightParticles.txt";
 
-    public ParticlePerSide(int latticeWidth, int latticeHeight, double threshold) throws IOException {
+    public ParticlesPerSide(int latticeWidth, int latticeHeight, double threshold) throws IOException {
         this.latticeWidth = latticeWidth;
         this.latticeHeight = latticeHeight;
         if (threshold > 1 && threshold < 100) {
@@ -23,13 +23,13 @@ public class ParticlePerSide implements CutCondition {
         } else {
             throw new IllegalArgumentException("Invalid error value. Must be in percentage or probability.");
         }
-        PrintWriter printWriter = new PrintWriter(new FileWriter(PARTICLE_PER_SIDE_FILE));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(RIGHT_PARTICLES_FILE));
         printWriter.close();
     }
 
     @Override
     public boolean evaluate(Lattice lattice, int N, int D, int iteration) throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(PARTICLE_PER_SIDE_FILE, true));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(RIGHT_PARTICLES_FILE, true));
 
         int leftLatticeParticles = 0;
 
