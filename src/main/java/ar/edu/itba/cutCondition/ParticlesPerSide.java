@@ -28,7 +28,7 @@ public class ParticlesPerSide implements CutCondition {
     }
 
     @Override
-    public boolean evaluate(Lattice lattice, int N, int D, int iteration, long time) throws IOException {
+    public boolean evaluate(Lattice lattice, int N, int D, int iteration) throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(RIGHT_PARTICLES_FILE, true));
 
         int leftLatticeParticles = 0;
@@ -49,7 +49,7 @@ public class ParticlesPerSide implements CutCondition {
 
 //        System.out.println("Left particles: " + leftLatticeParticles + " Right particles: " + rightLatticeParticles);
 
-        printWriter.printf("%d\t%d\t%d\n", iteration, time, rightLatticeParticles);
+        printWriter.printf("%d\t%d\n", iteration, rightLatticeParticles);
         printWriter.close();
         return (Math.abs(leftLatticeParticles - rightLatticeParticles) / (double) N) < threshold;
     }

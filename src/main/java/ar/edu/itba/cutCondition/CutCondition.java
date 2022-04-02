@@ -6,5 +6,5 @@ import java.io.IOException;
 
 @FunctionalInterface
 public interface CutCondition {
-    boolean evaluate(Lattice lattice, int N, int D, int iteration, long time) throws IOException;
+    boolean evaluate(Lattice lattice, int N, int D, int iteration) throws IOException;
 }

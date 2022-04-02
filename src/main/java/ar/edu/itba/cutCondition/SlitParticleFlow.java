@@ -25,7 +25,7 @@ public class SlitParticleFlow implements CutCondition {
     }
 
     @Override
-    public boolean evaluate(Lattice lattice, int N, int D, int iteration, long time) throws IOException {
+    public boolean evaluate(Lattice lattice, int N, int D, int iteration) throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(SLIT_PARTICLE_FLOW_FILE, true));
 
         int flow = 0;
@@ -43,7 +43,7 @@ public class SlitParticleFlow implements CutCondition {
                 flow -= lattice.getLatticeNode(y, x).getState().getLeftFlow();
             }
         }
-        printWriter.printf("%d\t%d\t%d\n", iteration, time, flow);
+        printWriter.printf("%d\t%d\n", iteration, flow);
         printWriter.close();
 
         if (Math.abs(flow) > threshold) {

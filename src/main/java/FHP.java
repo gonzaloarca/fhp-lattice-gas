@@ -41,14 +41,11 @@ public class FHP {
         LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
         latticePrinter.printInitialParameters();
         int iteration = 0;
-        long endTime, startTime = System.currentTimeMillis();
-        endTime = startTime;
-        while (!cutCondition.evaluate(lattice, N, D, iteration, endTime - startTime)) {
+        while (!cutCondition.evaluate(lattice, N, D, iteration)) {
 //        for (int i = 0; i < 1000; i++) {
             latticePrinter.printLattice(lattice, iteration, true);
             latticePrinter.printLatticeSubGrids(lattice, iteration, true);
             calculateAndPropagate();
-            endTime = System.currentTimeMillis();
             iteration++;
         }
         System.out.println("Iterations: " + iteration);
