@@ -47,7 +47,7 @@ public class ParticlesPerSide implements CutCondition {
             }
         }
 
-        System.out.println("Left particles: " + leftLatticeParticles + " Right particles: " + rightLatticeParticles);
+//        System.out.println("Left particles: " + leftLatticeParticles + " Right particles: " + rightLatticeParticles);
 
         printWriter.printf("%d\t%d\n", iteration, rightLatticeParticles);
         printWriter.close();
