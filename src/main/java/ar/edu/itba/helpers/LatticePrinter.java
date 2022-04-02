@@ -44,6 +44,16 @@ public class LatticePrinter {
         }
     }
 
+    public void printStaticLattice(String outputFile,Lattice lattice) throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter(outputFile));
+        printWriter.printf("%d\ncomment\n",latticeHeight*latticeWidth);
+        for (int y = 0; y < latticeHeight; y++) {
+            for (int x = 0; x < latticeWidth; x++) {
+                printWriter.printf("%f\t%f\t0\t%s\n",(x + (y % 2 == 0 ? 0.5 : 0)),(y*0.866),lattice.getLatticeNode(y,x).getState().getYS() || lattice.getLatticeNode(y,x).getState().getXS() ? "1 0 0" : "0 0 1");
+            }
+        }
+        printWriter.close();
+    }
 
     public void printInitialParameters() throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
