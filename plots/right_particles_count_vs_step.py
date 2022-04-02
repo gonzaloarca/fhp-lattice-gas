@@ -29,8 +29,8 @@ if __name__ == "__main__":
 
             plot.plot(steps, right_particles_count)
 
-            plot.xlabel("Iteraciones")
-            plot.ylabel("Cantidad de particulas en la derecha")
+    plot.xlabel("Iteraciones")
+    plot.ylabel("Cantidad de particulas en la derecha")
 
     plot.legend(["2000 particulas", "3000 particulas", "5000 particulas"])
     # plot.title(f"{cutConditionName} = {threshold}")
