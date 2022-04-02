@@ -94,17 +94,18 @@ public class LatticePrinter {
 
         printWriter.println(step);
 
-        for (int i = 0; i < (lattice.getHeight() / subgridHeight); i++) {
-            for (int j = 0; j < (lattice.getWidth() / subgridWidth); j++) {
-                SubGridStatistics subGridStats = subGridStatistics[i][j];
+        for (int y = 0; y < (lattice.getHeight() / subgridHeight); y++) {
+            for (int x = 0; x < (lattice.getWidth() / subgridWidth); x++) {
+                SubGridStatistics subGridStats = subGridStatistics[y][x];
                 if (!subGridStats.hasParticles()) continue;
 
                 SubGridStatistics.DirectionStatistics directionStatistics = subGridStats.getAverageDirection();
 
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\n", i, j, subGridStats.getTotalParticles(),
+                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%f\n", (y + 1) * (subgridHeight / 2),
+                        (x + 1) * (subgridWidth / 2), subGridStats.getTotalParticles(),
                         subGridStats.getParticlesA(), subGridStats.getParticlesB(), subGridStats.getParticlesC(),
                         subGridStats.getParticlesD(), subGridStats.getParticlesE(), subGridStats.getParticlesF(),
-                        directionStatistics.getDirection(), directionStatistics.getParticles());
+                        directionStatistics.getDirection(), directionStatistics.getParticles() / (double) maxParticlesPerSubGrid);
             }
         }
 

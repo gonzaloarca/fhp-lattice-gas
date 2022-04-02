@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 public class FHP {
     private final static int MAX_PARTICLES_PER_CELL = 6;
@@ -35,7 +36,7 @@ public class FHP {
         LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
         latticePrinter.printInitialParameters();
         int iteration = 0;
-        while (!cutCondition.evaluate(lattice, N, D)) {
+        while (!cutCondition.evaluate(lattice, N, D, iteration)) {
 //        for (int i = 0; i < 1000; i++) {
             latticePrinter.printLattice(lattice, iteration, true);
             latticePrinter.printLatticeSubGrids(lattice, iteration, true);

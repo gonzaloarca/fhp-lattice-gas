@@ -2,55 +2,59 @@ package ar.edu.itba.cutCondition;
 
 import ar.edu.itba.models.Lattice;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 public class SlitParticleFlow implements CutCondition {
 
-    private Integer previousFlow;
-    private final int consecutiveSimilarFlowBetweenSlitGrids;
-    private int consecutiveSimilarFlowBetweenSlitGridsCounter;
+    private final int consecutiveIterations;
+    private int consecutiveIterationsCounter;
     private final int maxFlowDifference;
-    private final int slitRangePerSide;
+    private final int measurementRegionWidth;
+    private final int threshold;
+    private static final String SLIT_PARTICLE_FLOW_FILE = "SlitParticleFlow.txt";
 
 
-    public SlitParticleFlow(int consecutiveSimilarFlowBetweenSlitGrids, int maxFlowDifference, int slitRangePerSide) {
-        this.previousFlow = null;
-        this.consecutiveSimilarFlowBetweenSlitGrids = consecutiveSimilarFlowBetweenSlitGrids;
-        this.consecutiveSimilarFlowBetweenSlitGridsCounter = 0;
+    public SlitParticleFlow(int consecutiveIterations, int maxFlowDifference, int measurementRegionWidth, int threshold) throws IOException {
+        this.consecutiveIterations = consecutiveIterations;
+        this.consecutiveIterationsCounter = 0;
         this.maxFlowDifference = maxFlowDifference;
-        this.slitRangePerSide = slitRangePerSide;
-
+        this.measurementRegionWidth = measurementRegionWidth;
+        PrintWriter printWriter = new PrintWriter(new FileWriter(SLIT_PARTICLE_FLOW_FILE));
+        this.threshold = threshold;
+        printWriter.close();
     }
 
     @Override
-    public boolean evaluate(Lattice lattice, int N, int D) {
+    public boolean evaluate(Lattice lattice, int N, int D, int iteration) throws IOException {
+        PrintWriter printWriter = new PrintWriter(new FileWriter(SLIT_PARTICLE_FLOW_FILE, true));
+
         int flow = 0;
         int width = lattice.getWidth();
         int height = lattice.getHeight();
 
         for (int y = (height - D) / 2; y < ((height + D) / 2); y++) {
-            // Rigth flow
-            for (int x = (width / 2) - slitRangePerSide, counter = 0; counter < slitRangePerSide; x++, counter++) {
+            // Right flow
+            for (int x = (width / 2) - measurementRegionWidth, xDisplacement = 0; xDisplacement < measurementRegionWidth; x++, xDisplacement++) {
                 flow += lattice.getLatticeNode(y, x).getState().getRightFlow();
             }
 
             // Left flow
-            for (int x = (width / 2) + 1, counter = 0; counter < slitRangePerSide; x++, counter++) {
+            for (int x = (width / 2) + 1, xDisplacement = 0; xDisplacement < measurementRegionWidth; x++, xDisplacement++) {
                 flow -= lattice.getLatticeNode(y, x).getState().getLeftFlow();
             }
         }
+        printWriter.printf("%d\t%d\n", iteration, flow);
+        printWriter.close();
 
-        if (previousFlow == null || flow == 0 || previousFlow == 0 || Integer.signum(flow) == Integer.signum(previousFlow)) {
-            previousFlow = flow;
-            consecutiveSimilarFlowBetweenSlitGridsCounter = 0;
+        if (Math.abs(flow) > threshold) {
+            consecutiveIterationsCounter = 0;
             return false;
         }
 
-        if ((Math.abs(previousFlow) - Math.abs(flow)) < maxFlowDifference) {
-            consecutiveSimilarFlowBetweenSlitGridsCounter++;
-        }
+        consecutiveIterationsCounter++;
 
-        previousFlow = flow;
-
-
-        return consecutiveSimilarFlowBetweenSlitGridsCounter == consecutiveSimilarFlowBetweenSlitGrids;
+        return consecutiveIterationsCounter == consecutiveIterations;
     }
 }
