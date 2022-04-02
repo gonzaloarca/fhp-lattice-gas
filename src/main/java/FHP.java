@@ -32,6 +32,11 @@ public class FHP {
         generateInitialState();
     }
 
+    public void printStaticLattice(String outputName) throws IOException {
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
+        latticePrinter.printStaticLattice(outputName,this.lattice);
+    }
+
     public void run(CutCondition cutCondition) throws IOException {
         LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
         latticePrinter.printInitialParameters();

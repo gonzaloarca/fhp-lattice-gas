@@ -13,8 +13,8 @@ public class App {
             cutConditionName = "ParticlesPerSide";
         }
 
-        int N = Integer.parseInt(System.getProperty("N", "500"));
-        int D = Integer.parseInt(System.getProperty("D", "30"));
+        int N = Integer.parseInt(System.getProperty("N", "5000"));
+        int D = Integer.parseInt(System.getProperty("D", "50"));
 
         int latticeHeight, latticeWidth;
         latticeHeight = latticeWidth = 200;
@@ -34,6 +34,7 @@ public class App {
             throw new IllegalArgumentException("Invalid cut condition name");
         }
         FHP fhpLatticeGas = new FHP(N, D, latticeWidth, latticeHeight, subGridWidth, subGridHeight);
+        fhpLatticeGas.printStaticLattice("static_lattice.xyz");
         fhpLatticeGas.run(cutCondition);
     }
 }
