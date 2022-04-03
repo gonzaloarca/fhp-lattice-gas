@@ -9,8 +9,7 @@ import java.io.PrintWriter;
 import java.util.function.Function;
 
 public class LatticePrinter {
-    private final static String LATTICE_FILE = "Lattice.txt";
-    private final static int MAX_PARTICLES_PER_CELL = 6;
+    private final static String LATTICE_FILE = "gas_simulation.txt";
 
     private final int N;
     private final int D;
