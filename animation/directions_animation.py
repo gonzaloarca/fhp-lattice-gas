@@ -27,12 +27,12 @@ class Particle():
 
 # (x,y)
 class Direction(enum.Enum):
-    A = (1, 0)
-    B = (1, 1)
-    C = (-1, 1)
-    D = (-1, 0)
-    E = (-1, -1)
-    F = (1, -1)
+    A = (0.5, 0)
+    B = (0.5, 0.866)
+    C = (-0.5, 0.866)
+    D = (-0.5, 0)
+    E = (-0.5, -0.866)
+    F = (0.5, -0.866)
 
     def __iter__(self):
         return iter(self.value)
@@ -129,4 +129,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    write_directions(args.lattice_steps, 10, 10, "average_vector_field.xyz")
+    write_directions(args.lattice_steps, 20, 20, "average_vector_field.xyz")
