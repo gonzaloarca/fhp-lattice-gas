@@ -30,7 +30,7 @@ public class FHP {
 
     public void printStaticLattice(String outputName) throws IOException {
         LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D);
-        latticePrinter.printStaticLattice(outputName,this.lattice);
+        latticePrinter.printStaticLattice(outputName, this.lattice);
     }
 
     public void run(CutCondition cutCondition) throws IOException {
@@ -58,7 +58,7 @@ public class FHP {
             for (int j = 0; j < width; j++) {
                 randomBit = random.nextBoolean();
                 isYWall = j == 0 || (j == width / 2 && (i < (height - D) / 2 || i > (height + D) / 2)) || j == width - 1;
-                isXWall = i == 0 || i == height - 1;
+                isXWall = i == 0 || i == height - 1 || (j == width / 2 && ((i == ((height - D) / 2) - 1) || (i == ((height + D) / 2) + 1)));
                 lattice.setLatticeNode(i, j, new State(isXWall, isYWall, randomBit));
             }
         }
