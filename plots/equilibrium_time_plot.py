@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plot
 import numpy as np
 
-from utils import right_particles_fraction_counter
+from utils import get_equilibrium_time
 
 def vary_particles(threshold, sample_size, min_particles, max_particles, particle_step, slit_width): 
     particle_input = [particles for particles in range(min_particles, max_particles + particle_step, particle_step)]
@@ -14,6 +14,7 @@ def vary_particles(threshold, sample_size, min_particles, max_particles, particl
     upper_error = []
 
     simulation_file_name = "gas_simulation.txt"
+    summary_file_name = "summary.txt"
 
     for particle_count in particle_input:
 
@@ -23,13 +24,11 @@ def vary_particles(threshold, sample_size, min_particles, max_particles, particl
 
         for sample_number in range(sample_size):
 
-            cmd = f"java -DN={int(particle_count)} -DD={slit_width} -DoutFileName={simulation_file_name} -Dthreshold={threshold} -jar ./target/FHPLatticeGas-1.0-SNAPSHOT.jar"
+            cmd = f"java -DN={int(particle_count)} -DD={slit_width}  -DsimulationOutFileName={simulation_file_name} -DsummaryOutFileName={summary_file_name} -Dthreshold={threshold} -jar ./target/FHPLatticeGas-1.0-SNAPSHOT.jar"
             print(f"Sample number: {sample_number}. Executing: {cmd}")
             os.system(cmd)
 
-            # Last line has an enter
-            right_particles_fraction_count = right_particles_fraction_counter(simulation_file_name)
-            equilibrium_step = len(right_particles_fraction_count) - 1
+            equilibrium_step = get_equilibrium_time(summary_file_name)
 
             if min_eq_step == 0:
                 min_eq_step = equilibrium_step
@@ -67,6 +66,7 @@ def vary_slit_width(threshold, sample_size, min_slit_width, max_slit_width, slit
     upper_error = []
 
     simulation_file_name = "gas_simulation.txt"
+    summary_file_name = "summary.txt"
 
     for slit_width in slit_width_input:
 
@@ -76,12 +76,11 @@ def vary_slit_width(threshold, sample_size, min_slit_width, max_slit_width, slit
 
         for sample_number in range(sample_size):
 
-            cmd = f"java -DN={particle_count} -DD={slit_width} -DoutFileName={simulation_file_name} -Dthreshold={threshold} -jar ./target/FHPLatticeGas-1.0-SNAPSHOT.jar"
+            cmd = f"java -DN={particle_count} -DD={slit_width} -DsimulationOutFileName={simulation_file_name} -DsummaryOutFileName={summary_file_name} -Dthreshold={threshold} -jar ./target/FHPLatticeGas-1.0-SNAPSHOT.jar"
             print(f"Sample number: {sample_number}. Executing: {cmd}")
             os.system(cmd)
 
-            right_particles_fraction_count = right_particles_fraction_counter(simulation_file_name)
-            equilibrium_step = len(right_particles_fraction_count) - 1
+            equilibrium_step = get_equilibrium_time(summary_file_name)
 
             if min_eq_step == 0:
                 min_eq_step = equilibrium_step

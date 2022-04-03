@@ -1,41 +1,47 @@
 import ar.edu.itba.cutCondition.CutCondition;
+import ar.edu.itba.cutCondition.ParticlesPerSide;
 import ar.edu.itba.helpers.LatticePrinter;
 import ar.edu.itba.models.Direction;
 import ar.edu.itba.models.Lattice;
 import ar.edu.itba.models.State;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Function;
 
 public class FHP {
     private final static int MAX_PARTICLES_PER_CELL = 6;
     private final Map<State, State> collisionLookupTable;
     private final int N;
     private final int D;
-    private final String outputFileName;
+    private final double threshold;
+    private final String simulationOutputFileName;
+    private final String summaryOutputFileName;
     private Lattice lattice;
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight, String outputFileName) {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight, double threshold, String simulationOutputFileName, String summaryOutputFileName) {
         this.N = n;
         this.D = d;
+        this.threshold = threshold;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
-        this.outputFileName = outputFileName;
+        this.simulationOutputFileName = simulationOutputFileName;
+        this.summaryOutputFileName = summaryOutputFileName;
         initializeCollisionLookupTable();
         generateLatticeSpace();
         generateInitialState();
     }
 
     public void printStaticLattice(String outputName) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, outputFileName);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, simulationOutputFileName);
         latticePrinter.printStaticLattice(outputName, this.lattice);
     }
 
-    public void run(CutCondition cutCondition) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, outputFileName);
+    public void run() throws IOException {
+        CutCondition cutCondition = new ParticlesPerSide(lattice.getWidth(), lattice.getHeight(), threshold);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, simulationOutputFileName);
         latticePrinter.printInitialParameters();
         int iteration = 0;
         while (!cutCondition.evaluate(lattice, N, D, iteration)) {
@@ -44,7 +50,12 @@ public class FHP {
             calculateAndPropagate();
             iteration++;
         }
+
+        PrintWriter parametersWriter = new PrintWriter(summaryOutputFileName);
+        parametersWriter.printf("%d\n%d\n%d\n%d\t%d\n%.4f", iteration, N, D, lattice.getHeight(), lattice.getWidth(), threshold);
         System.out.println("Iterations: " + iteration);
+        
+        parametersWriter.close();
     }
 
     //generate walls and non-walls
