@@ -32,7 +32,7 @@ def process_subgrids(N, lattice_width, lattice_height, subgrids, subgrid_width, 
             num_of_particles = len(subgrids[i][j])
             avg_max_density = N / \
                 (lattice_height * lattice_width) * \
-                subgrid_height * subgrid_width * 4
+                subgrid_height * subgrid_width * 2
             subgrid_particle_density = num_of_particles / avg_max_density
             out_file.write(
                 f'{subgrid_x}\t{subgrid_y}\t0\t0\t0\t1\t{1-subgrid_particle_density if subgrid_particle_density != 0 else 1}\t{num_of_particles}\n')
