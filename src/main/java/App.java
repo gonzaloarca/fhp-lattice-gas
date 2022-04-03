@@ -18,8 +18,6 @@ public class App {
 
         int latticeHeight, latticeWidth;
         latticeHeight = latticeWidth = 200;
-        int subGridHeight, subGridWidth;
-        subGridHeight = subGridWidth = 10;
 
         CutCondition cutCondition;
         if (cutConditionName.equals("ParticlesPerSide")) {
@@ -33,7 +31,7 @@ public class App {
         } else {
             throw new IllegalArgumentException("Invalid cut condition name");
         }
-        FHP fhpLatticeGas = new FHP(N, D, latticeWidth, latticeHeight, subGridWidth, subGridHeight);
+        FHP fhpLatticeGas = new FHP(N, D, latticeWidth, latticeHeight);
         fhpLatticeGas.printStaticLattice("static_lattice.xyz");
         fhpLatticeGas.run(cutCondition);
     }

@@ -15,36 +15,31 @@ public class FHP {
     private final Map<State, State> collisionLookupTable;
     private final int N;
     private final int D;
-    private final int subGridHeight;
-    private final int subGridWidth;
     private Lattice lattice;
 
 
-    public FHP(int n, int d, int latticeWidth, int latticeHeight, int subGridWidth, int subGridHeight) {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight) {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
-        this.subGridWidth = subGridWidth;
-        this.subGridHeight = subGridHeight;
         initializeCollisionLookupTable();
         generateLatticeSpace();
         generateInitialState();
     }
 
     public void printStaticLattice(String outputName) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D);
         latticePrinter.printStaticLattice(outputName,this.lattice);
     }
 
     public void run(CutCondition cutCondition) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), subGridHeight, subGridWidth, N, D);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D);
         latticePrinter.printInitialParameters();
         int iteration = 0;
         while (!cutCondition.evaluate(lattice, N, D, iteration)) {
 //        for (int i = 0; i < 1000; i++) {
             latticePrinter.printLattice(lattice, iteration, true);
-            latticePrinter.printLatticeSubGrids(lattice, iteration, true);
             calculateAndPropagate();
             iteration++;
         }

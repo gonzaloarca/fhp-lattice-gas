@@ -2,54 +2,36 @@ package ar.edu.itba.helpers;
 
 import ar.edu.itba.models.Lattice;
 import ar.edu.itba.models.State;
-import ar.edu.itba.models.SubGridStatistics;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.function.Function;
 
 public class LatticePrinter {
     private final static String LATTICE_FILE = "Lattice.txt";
-    private final static String LATTICE_SUBGRIDS_FILE = "LatticeSubGrids.txt";
     private final static int MAX_PARTICLES_PER_CELL = 6;
 
     private final int N;
     private final int D;
     private final int latticeHeight;
     private final int latticeWidth;
-    private final int subgridHeight;
-    private final int subgridWidth;
-    private final SubGridStatistics[][] subGridStatistics;
-    private final int totalSubGrids;
-    private final int maxParticlesPerSubGrid;
 
 
-    public LatticePrinter(int latticeHeight, int latticeWidth, int subGridHeight, int subGridWidth, int n, int d) {
+    public LatticePrinter(int latticeHeight, int latticeWidth, int n, int d) {
         this.N = n;
         this.D = d;
         this.latticeHeight = latticeHeight;
         this.latticeWidth = latticeWidth;
-        this.subgridHeight = subGridHeight;
-        this.subgridWidth = subGridWidth;
-        this.totalSubGrids = (latticeHeight / subGridHeight) * (latticeWidth / subGridWidth);
-        this.maxParticlesPerSubGrid = subGridHeight * subGridWidth * MAX_PARTICLES_PER_CELL;
-        this.subGridStatistics = new SubGridStatistics[latticeHeight / subGridHeight][latticeWidth / subGridWidth];
 
-        for (int i = 0; i < latticeHeight / subGridHeight; i++) {
-            for (int j = 0; j < latticeWidth / subGridWidth; j++) {
-                this.subGridStatistics[i][j] = new SubGridStatistics(subGridHeight, subGridWidth);
-            }
-        }
     }
 
-    public void printStaticLattice(String outputFile,Lattice lattice) throws IOException {
+    public void printStaticLattice(String outputFile, Lattice lattice) throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(outputFile));
-        printWriter.printf("%d\ncomment\n",latticeHeight*latticeWidth);
+        printWriter.printf("%d\ncomment\n", latticeHeight * latticeWidth);
         for (int y = 0; y < latticeHeight; y++) {
             for (int x = 0; x < latticeWidth; x++) {
-                printWriter.printf("%f\t%f\t0\t%s\n",(x + (y % 2 == 0 ? 0.5 : 0)),(y*0.866),lattice.getLatticeNode(y,x).getState().getYS() || lattice.getLatticeNode(y,x).getState().getXS() ? "1 0 0" : "0 0 1");
+                printWriter.printf("%f\t%f\t0\t%s\n", (x + (y % 2 == 0 ? 0.5 : 0)), (y * 0.866), lattice.getLatticeNode(y, x).getState().getYS() || lattice.getLatticeNode(y, x).getState().getXS() ? "1 0 0" : "0 0 1");
             }
         }
         printWriter.close();
@@ -58,10 +40,6 @@ public class LatticePrinter {
     public void printInitialParameters() throws IOException {
         PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
         printWriter.printf("%d\n%d\n%d\t%d\n", N, D, latticeHeight, latticeWidth);
-        printWriter.close();
-
-        printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE));
-        printWriter.printf("%d\n%d\n%d\t%d\n%d\t%d\n%d\n%d\n", N, D, latticeHeight, latticeWidth, subgridHeight, subgridWidth, totalSubGrids, maxParticlesPerSubGrid);
         printWriter.close();
     }
 
@@ -86,41 +64,5 @@ public class LatticePrinter {
         printWriter.close();
     }
 
-    public void printLatticeSubGrids(Lattice lattice, int step, boolean append) throws IOException {
 
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_SUBGRIDS_FILE, append));
-
-        for (int i = 0; i < lattice.getHeight(); i++) {
-            int subGridRow = i / subgridHeight;
-            for (int j = 0; j < lattice.getWidth(); j++) {
-                if (lattice.checkIsEmpty(i, j)) continue;
-
-                State state = lattice.getLatticeNode(i, j).getState();
-
-                int subGridColumn = j / subgridWidth;
-                subGridStatistics[subGridRow][subGridColumn].processState(state);
-            }
-        }
-
-        printWriter.println(step);
-
-        for (int y = 0; y < (lattice.getHeight() / subgridHeight); y++) {
-            for (int x = 0; x < (lattice.getWidth() / subgridWidth); x++) {
-                SubGridStatistics subGridStats = subGridStatistics[y][x];
-                if (!subGridStats.hasParticles()) continue;
-
-                SubGridStatistics.DirectionStatistics directionStatistics = subGridStats.getAverageDirection();
-
-                printWriter.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%f\n", (y + 1) * (subgridHeight / 2),
-                        (x + 1) * (subgridWidth / 2), subGridStats.getTotalParticles(),
-                        subGridStats.getParticlesA(), subGridStats.getParticlesB(), subGridStats.getParticlesC(),
-                        subGridStats.getParticlesD(), subGridStats.getParticlesE(), subGridStats.getParticlesF(),
-                        directionStatistics.getDirection(), directionStatistics.getParticles() / (double) maxParticlesPerSubGrid);
-            }
-        }
-
-        printWriter.close();
-
-        Arrays.stream(subGridStatistics).forEach(subGridStatisticsRow -> Arrays.stream(subGridStatisticsRow).forEach(SubGridStatistics::reset));
-    }
 }
