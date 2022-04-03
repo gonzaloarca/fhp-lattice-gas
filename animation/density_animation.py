@@ -1,7 +1,6 @@
 import argparse
 import enum
 from io import TextIOWrapper
-from itertools import islice, starmap
 
 MAX_PARTICLES_PER_CELL = 6
 
@@ -25,56 +24,21 @@ class Particle():
         return f'Particle({self.x}, {self.y}, {self.z}, {self.A}, {self.B}, {self.C}, {self.D}, {self.E}, {self.F}, {self.XS}, {self.YX}, {self.R})'
 
 
-# (x,y)
-class Direction(enum.Enum):
-    A = (0.5, 0)
-    B = (0.5, 0.866)
-    C = (-0.5, 0.866)
-    D = (-0.5, 0)
-    E = (-0.5, -0.866)
-    F = (0.5, -0.866)
-
-    def __iter__(self):
-        return iter(self.value)
-
-
-def process_subgrids(lattice_width, lattice_height, subgrids, subgrid_width, subgrid_height, max_particles_per_subgrid, out_file: TextIOWrapper):
+def process_subgrids(N, lattice_width, lattice_height, subgrids, subgrid_width, subgrid_height, max_particles_per_subgrid, out_file: TextIOWrapper):
     for i in range(lattice_height//subgrid_height):
         for j in range(lattice_width//subgrid_width):
             subgrid_y = (j * subgrid_width) + (subgrid_width / 2)
             subgrid_x = (i * subgrid_height) + (subgrid_height / 2)
-            if subgrid_y % 2 == 0:
-                x_offset = 0.5
-            else:
-                x_offset = 0
-            dir_particle = [0, 0, 0, 0, 0, 0]
-            new_direction = (0, 0)
-            particles = subgrids[i][j]
-            for particle in particles:
-                if particle.A is not None:
-                    dir_particle[0] += 1
-                elif particle.B is not None:
-                    dir_particle[1] += 1
-                elif particle.C is not None:
-                    dir_particle[2] += 1
-                elif particle.D is not None:
-                    dir_particle[3] += 1
-                elif particle.E is not None:
-                    dir_particle[4] += 1
-                elif particle.F is not None:
-                    dir_particle[5] += 1
-
-            products = [m for m in starmap(
-                lambda i, j:i*j, [y for x in zip(Direction.A, Direction.B, Direction.C, Direction.D, Direction.E, Direction.F) for y in zip(x, dir_particle)])]
-            new_direction = tuple(sum(x) for x in zip(
-                *[islice(products, i, None, 6) for i in range(6)]))
-            new_direction_normalized = tuple(
-                component/max_particles_per_subgrid for component in new_direction)
+            num_of_particles = len(subgrids[i][j])
+            avg_max_density = N / \
+                (lattice_height * lattice_width) * \
+                subgrid_height * subgrid_width * 4
+            subgrid_particle_density = num_of_particles / avg_max_density
             out_file.write(
-                f'{subgrid_x + x_offset}\t{subgrid_y * 0.866}\t0\t{new_direction_normalized[0]}\t{new_direction_normalized[1]}\n')
+                f'{subgrid_x}\t{subgrid_y}\t0\t0\t0\t1\t{1-subgrid_particle_density if subgrid_particle_density != 0 else 1}\t{num_of_particles}\n')
 
 
-def write_directions(input_file, subgrid_width, subgrid_height, out_filename):
+def write_density(input_file, subgrid_width, subgrid_height, out_filename):
 
     subgrid_file = open(out_filename, "w")
     N = 0
@@ -105,7 +69,7 @@ def write_directions(input_file, subgrid_width, subgrid_height, out_filename):
                 if len(line_data) == 1:
                     if(i != 3):
                         subgrid_file.write(f'{int(total_subgrids)}\ncomment\n')
-                        process_subgrids(lattice_width, lattice_height,
+                        process_subgrids(N, lattice_width, lattice_height,
                                          subgrids, subgrid_width, subgrid_height, max_particles_per_subgrid, subgrid_file)
                         subgrids = [[[] for __ in range(
                             lattice_width//subgrid_width)] for _ in range(lattice_height//subgrid_height)]
@@ -116,8 +80,7 @@ def write_directions(input_file, subgrid_width, subgrid_height, out_filename):
                     subgrid_x = x//subgrid_width
                     subgrid_y = y//subgrid_height
                     subgrid = subgrids[subgrid_x][subgrid_y]
-                    subgrid.append(Particle(int(line_data[0]), int(line_data[1]), 0, Direction.A if int(line_data[2]) == 1 else None, Direction.B if int(line_data[3]) == 1 else None, Direction.C if int(line_data[4]) == 1 else None,
-                                            Direction.D if int(line_data[5]) == 1 else None, Direction.E if int(line_data[6]) == 1 else None, Direction.F if int(line_data[7]) == 1 else None, True if int(line_data[8]) == 1 else False, True if int(line_data[9]) == 1 else False, True if int(line_data[10]) == 1 else False))
+                    subgrid.append(1)
 
     subgrid_file.close()
 
@@ -126,9 +89,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=argparse.FileType('r'),
                         default=None, help="File of subgrids simulation timesteps", dest="lattice_steps", required=True)
-    parser.add_argument("--output", type=argparse.FileType('r'),
-                        default="average_vector_field.xyz", help="Desired file name for XYZ output", dest="out_file_name", required=True)
 
     args = parser.parse_args()
 
-    write_directions(args.lattice_steps, 10, 10, args.out_file_name)
+    write_density(args.lattice_steps, 20, 20, "average_density.xyz")
