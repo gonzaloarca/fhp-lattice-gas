@@ -70,7 +70,7 @@ def variate_slit_width(cut_condition_name, threshold, slit_width_step):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variate", default=None, help="Variable to change", dest="variate", required=True)
+    parser.add_argument("--vary", default=None, help="Variable to change", dest="vary", required=True)
     parser.add_argument("--slit-width-step", default=25, help="The slit width step", dest="slit_width_step", required=False)
 
     args = parser.parse_args()
@@ -78,9 +78,9 @@ if __name__ == "__main__":
     cut_condition_name = "ParticlesPerSide"
     threshold = 0.1
 
-    if args.variate == "N":
+    if args.vary == "N":
         variate_particles(cut_condition_name, threshold)
-    elif args.variate == "D":
+    elif args.vary == "D":
         variate_slit_width(cut_condition_name, threshold, int(args.slit_width_step))
     else:
         print("Invalid variation")

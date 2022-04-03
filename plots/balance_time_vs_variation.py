@@ -5,7 +5,7 @@ import matplotlib.pyplot as plot
 import numpy as np
 
 def variate_particles(cut_condition_name, threshold, iterations): 
-    number_of_particles = [5000, 6000, 7000]
+    number_of_particles = [5000]
 
     particles_count = []
     steps = [] 
@@ -52,7 +52,7 @@ def variate_particles(cut_condition_name, threshold, iterations):
     print(f"Steps: {steps}")
     print(f"Lower error: {lower_error}")
     print(f"Upper error: {upper_error}")
-    plot.errorbar(particles_count, steps, yerr=[lower_error, upper_error], color='red', marker='o', ecolor="blue", elinewidth=0.5, capsize=5)
+    plot.errorbar(particles_count, steps, fmt=None, yerr=[lower_error, upper_error], color='red', marker='o', ecolor="blue", elinewidth=0.5, capsize=5)
     plot.ylabel("Número de iteración")
     plot.xlabel("Cantidad de particulas")
     plot.legend(legends)
@@ -97,7 +97,7 @@ def variate_slit_width(cut_condition_name, threshold, slit_width_step):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variate", default=None, help="Variable to change", dest="variate", required=True)
+    parser.add_argument("--vary", default=None, help="Variable to change", dest="vary", required=True)
     parser.add_argument("--slit-width-step", default=25, help="The slit width step", dest="slit_width_step", required=False)
     parser.add_argument("--iterations", default=3, help="The number of iterations per number of particles", dest="iterations", required=False)
 
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     cut_condition_name = "ParticlesPerSide"
     threshold = 0.1
 
-    if args.variate == "N":
+    if args.vary == "N":
         variate_particles(cut_condition_name, threshold, int(args.iterations))
-    elif args.variate == "D":
+    elif args.vary == "D":
         variate_slit_width(cut_condition_name, threshold, int(args.slit_width_step))
     else:
         print("Invalid variation")
