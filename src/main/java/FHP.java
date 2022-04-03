@@ -15,26 +15,27 @@ public class FHP {
     private final Map<State, State> collisionLookupTable;
     private final int N;
     private final int D;
+    private final String outputFileName;
     private Lattice lattice;
 
-
-    public FHP(int n, int d, int latticeWidth, int latticeHeight) {
+    public FHP(int n, int d, int latticeWidth, int latticeHeight, String outputFileName) {
         this.N = n;
         this.D = d;
         this.lattice = new Lattice(latticeHeight, latticeWidth);
         this.collisionLookupTable = new HashMap<>();
+        this.outputFileName = outputFileName;
         initializeCollisionLookupTable();
         generateLatticeSpace();
         generateInitialState();
     }
 
     public void printStaticLattice(String outputName) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, outputFileName);
         latticePrinter.printStaticLattice(outputName,this.lattice);
     }
 
     public void run(CutCondition cutCondition) throws IOException {
-        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D);
+        LatticePrinter latticePrinter = new LatticePrinter(lattice.getHeight(), lattice.getWidth(), N, D, outputFileName);
         latticePrinter.printInitialParameters();
         int iteration = 0;
         while (!cutCondition.evaluate(lattice, N, D, iteration)) {

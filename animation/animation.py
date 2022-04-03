@@ -33,7 +33,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=argparse.FileType('r'),
                         default=None, help="File of lattice simulation timesteps", dest="lattice_steps", required=True)
-
+    parser.add_argument("--output", type=argparse.FileType('r'),
+                        default="particles.xyz", help="Desired file name for XYZ output", dest="out_file_name", required=True)
+    
     args = parser.parse_args()
 
-    write_animation("animation.xyz", args.lattice_steps)
+    write_animation(args.out_file_name, args.lattice_steps)

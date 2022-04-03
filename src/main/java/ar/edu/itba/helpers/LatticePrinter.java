@@ -9,20 +9,19 @@ import java.io.PrintWriter;
 import java.util.function.Function;
 
 public class LatticePrinter {
-    private final static String LATTICE_FILE = "gas_simulation.txt";
 
     private final int N;
     private final int D;
     private final int latticeHeight;
     private final int latticeWidth;
+    private final String outputFileName;
 
-
-    public LatticePrinter(int latticeHeight, int latticeWidth, int n, int d) {
+    public LatticePrinter(int latticeHeight, int latticeWidth, int n, int d, String outputFileName){
         this.N = n;
         this.D = d;
         this.latticeHeight = latticeHeight;
         this.latticeWidth = latticeWidth;
-
+        this.outputFileName = outputFileName;
     }
 
     public void printStaticLattice(String outputFile, Lattice lattice) throws IOException {
@@ -37,13 +36,13 @@ public class LatticePrinter {
     }
 
     public void printInitialParameters() throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(outputFileName));
         printWriter.printf("%d\n%d\n%d\t%d\n", N, D, latticeHeight, latticeWidth);
         printWriter.close();
     }
 
     public void printLattice(Lattice lattice, int step, boolean append) throws IOException {
-        PrintWriter printWriter = new PrintWriter(new FileWriter(LATTICE_FILE, append));
+        PrintWriter printWriter = new PrintWriter(new FileWriter(outputFileName, append));
 
         Function<Boolean, Integer> booleanToInt = b -> b ? 1 : 0;
 
