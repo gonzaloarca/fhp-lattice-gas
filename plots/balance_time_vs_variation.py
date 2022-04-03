@@ -4,14 +4,13 @@ import os
 import matplotlib.pyplot as plot
 import numpy as np
 
-def variate_particles(cut_condition_name, threshold, iterations): 
-    number_of_particles = [5000, 6000, 7000]
+def vary_particles(cut_condition_name, threshold, iterations): 
+    number_of_particles = [2000, 3000, 5000, 6500]
 
     particles_count = []
     steps = [] 
     lower_error = []
     upper_error = []
-    legends = []
 
     for particles in number_of_particles:
 
@@ -29,7 +28,7 @@ def variate_particles(cut_condition_name, threshold, iterations):
                 lines = right_particles_file.readlines()
 
                 # Last line has an enter
-                balance_step = int(lines[-2].split("\t")[0])
+                balance_step = int(lines[-1].split("\t")[0])
 
                 if min_step == 0:
                     min_step = balance_step
@@ -41,55 +40,77 @@ def variate_particles(cut_condition_name, threshold, iterations):
 
                 step += balance_step
                 
-
         particles_count.append(particles)
         average_step = step / iterations
         steps.append(average_step)
         lower_error.append(average_step - min_step)
         upper_error.append(max_step - average_step)
-        legends.append(f"{particles} particulas")
 
+    print(f"Particles: {particles_count}")
     print(f"Steps: {steps}")
     print(f"Lower error: {lower_error}")
     print(f"Upper error: {upper_error}")
-    plot.errorbar(particles_count, steps, yerr=[lower_error, upper_error], color='red', marker='o', ecolor="blue", elinewidth=0.5, capsize=5)
-    plot.ylabel("Número de iteración")
+
+    plot.errorbar(particles_count, steps, ls="none", yerr=[lower_error, upper_error], color='red', marker='o', ecolor="blue", elinewidth=0.5, capsize=5)
+    plot.ylabel("Cantidad de iteraciones")
     plot.xlabel("Cantidad de particulas")
-    plot.legend(legends)
     plot.show()
     plot.close()
 
 
 
-def variate_slit_width(cut_condition_name, threshold, slit_width_step):
+def vary_slit_width(cut_condition_name, threshold, slit_width_step, iterations):
     N = 3000
     max_slit_width = 200
     slit_widths = [slit_width for slit_width in range(slit_width_step, max_slit_width + slit_width_step, slit_width_step)]
 
+    slit_width_count = []
+    steps = [] 
+    lower_error = []
+    upper_error = []
+
     for slit_width in slit_widths:
 
-        cmd = f"java -DN={N} -DD={slit_width} -DcutCondition={cut_condition_name} -Dthreshold={threshold} -jar ../target/FHPLatticeGas-1.0-SNAPSHOT.jar"
-        print(f"Executing: {cmd}")
-        os.system(cmd)
+        max_step = 0
+        min_step = 0
+        step = 0
 
-        with open("RightParticles.txt") as right_particles_file:
-            right_particles = right_particles_file.readlines()
+        for iteration in range(iterations):
 
-            steps = []
-            right_particles_count = []
+            cmd = f"java -DN={int(N)} -DD={slit_width} -DcutCondition={cut_condition_name} -Dthreshold={threshold} -jar ../target/FHPLatticeGas-1.0-SNAPSHOT.jar"
+            print(f"Iteration: {iteration}. Executing: {cmd}")
+            os.system(cmd)
 
-            for line in right_particles:
-                line_data = line.split("\t")
+            with open("RightParticles.txt") as right_particles_file:
+                lines = right_particles_file.readlines()
 
-                steps.append(int(line_data[0]))
-                right_particles_count.append(int(line_data[1]) / N)
+                # Last line has an enter
+                balance_step = int(lines[-1].split("\t")[0])
 
-            plot.plot(steps, right_particles_count)
+                if min_step == 0:
+                    min_step = balance_step
 
-    plot.xlabel("Número de iteración")
-    plot.ylabel("Fracción de particulas en el recinto derecho")
+                if balance_step > max_step:
+                    max_step = balance_step
+                elif balance_step < min_step:
+                    min_step = balance_step
 
-    plot.legend([f"{slit_width} nodos de ancho" for slit_width in slit_widths])
+                step += balance_step
+
+        slit_width_count.append(slit_width)
+        average_step = step / iterations
+        steps.append(average_step)
+        lower_error.append(average_step - min_step)
+        upper_error.append(max_step - average_step)
+
+    print(f"Slit widths: {slit_width_count}")
+    print(f"Steps: {steps}")
+    print(f"Lower error: {lower_error}")
+    print(f"Upper error: {upper_error}")
+    
+    plot.errorbar(slit_width_count, steps, ls="none", yerr=[lower_error, upper_error], color='red', marker='o', ecolor="blue", elinewidth=0.5, capsize=5)
+    plot.ylabel("Cantidad de iteraciones")
+    plot.xlabel("Apertura en el tabique")
     plot.show()
     plot.close()
 
@@ -97,18 +118,18 @@ def variate_slit_width(cut_condition_name, threshold, slit_width_step):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variate", default=None, help="Variable to change", dest="variate", required=True)
+    parser.add_argument("--vary", default=None, help="Variable to change", dest="vary", required=True)
     parser.add_argument("--slit-width-step", default=25, help="The slit width step", dest="slit_width_step", required=False)
-    parser.add_argument("--iterations", default=3, help="The number of iterations per number of particles", dest="iterations", required=False)
+    parser.add_argument("--iterations", default=5, help="The number of iterations per number of particles", dest="iterations", required=False)
 
     args = parser.parse_args()
 
     cut_condition_name = "ParticlesPerSide"
     threshold = 0.1
 
-    if args.variate == "N":
-        variate_particles(cut_condition_name, threshold, int(args.iterations))
-    elif args.variate == "D":
-        variate_slit_width(cut_condition_name, threshold, int(args.slit_width_step))
+    if args.vary == "N":
+        vary_particles(cut_condition_name, threshold, int(args.iterations))
+    elif args.vary == "D":
+        vary_slit_width(cut_condition_name, threshold, int(args.slit_width_step), int(args.iterations))
     else:
         print("Invalid variation")
