@@ -180,41 +180,41 @@ public class FHP {
 
         if (nextState.getB()) {
             if (oddRow) {
-                nodeState = lattice.getLatticeNode(i - 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i + 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
-                nodeState = lattice.getLatticeNode(i - 1, j + 1).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j + 1, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i + 1, j + 1).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.B, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getC()) {
             if (oddRow) {
-                nodeState = lattice.getLatticeNode(i - 1, j - 1).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j - 1, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i + 1, j - 1).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j - 1, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
-                nodeState = lattice.getLatticeNode(i - 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i + 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.C, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getE()) {
             if (oddRow) {
-                nodeState = lattice.getLatticeNode(i + 1, j - 1).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j - 1, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i - 1, j - 1).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j - 1, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
-                nodeState = lattice.getLatticeNode(i + 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i - 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.E, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
 
         if (nextState.getF()) {
             if (oddRow) {
-                nodeState = lattice.getLatticeNode(i + 1, j).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i - 1, j).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             } else {
-                nodeState = lattice.getLatticeNode(i + 1, j + 1).getState();
-                nextLattice.setLatticeNodeDirection(i + 1, j + 1, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
+                nodeState = lattice.getLatticeNode(i - 1, j + 1).getState();
+                nextLattice.setLatticeNodeDirection(i - 1, j + 1, Direction.F, nodeState.getXS(), nodeState.getYS(), nodeState.getR());
             }
         }
     }
