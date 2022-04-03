@@ -129,4 +129,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    write_directions(args.lattice_steps, 10, 10, "subgrid.xyz")
+    write_directions(args.lattice_steps, 10, 10, "average_vector_field.xyz")
