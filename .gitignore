@@ -40,3 +40,7 @@ target/
 
 # xyz files
 *.xyz
+
+# python cache files
+__pycache__/
+*.py[cod]

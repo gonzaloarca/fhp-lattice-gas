@@ -126,7 +126,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=argparse.FileType('r'),
                         default=None, help="File of subgrids simulation timesteps", dest="lattice_steps", required=True)
+    parser.add_argument("--output", type=argparse.FileType('r'),
+                        default="average_vector_field.xyz", help="Desired file name for XYZ output", dest="out_file_name", required=True)
 
     args = parser.parse_args()
 
-    write_directions(args.lattice_steps, 20, 20, "average_vector_field.xyz")
+    write_directions(args.lattice_steps, 10, 10, args.out_file_name)
