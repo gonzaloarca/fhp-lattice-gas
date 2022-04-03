@@ -121,7 +121,8 @@ pipenv shell
 ## Run the simulations and generate plot
 python plots/equilibrium_time_plot.py --var ${INDEPENDENT_VARIABLE} \
 --sample_size ${SAMPLE_SIZE} --particle_step ${PARTICLE_STEP} \
---max_particles ${MAX_PARTICLES} --slit_width_step ${SLIT_WIDTH_STEP} \
+--min_particles ${MIN_PARTICLES} --max_particles ${MAX_PARTICLES} \
+--slit_width_step ${SLIT_WIDTH_STEP} --min_slit_width ${MIN_SLIT_WIDTH} \
 --max_slit_width ${MAX_SLIT_WIDTH} --particle_count ${PARTICLE_COUNT} \
 --slit_width ${SLIT_WIDTH}
 ```
@@ -131,9 +132,11 @@ where:
 - `${INDEPENDENT_VARIABLE}`: Variable to be used as the independent variable in the plot. It can be either `N` for particle count or `D` for slit width.
 - `${SAMPLE_SIZE}` (Optional): Number of samples to be used in the plot. It can be any integer greater than 1. Defaults to 5.
 - `${PARTICLE_STEP}` (Optional): Step size for the particle count to be used in the variable particle count plot. It can be any integer greater than 1. Defaults to 1000.
+- `${MIN_PARTICLES}` (Optional): Minimum particle count to be used in the variable particle count plot. It can be any integer greater than 1. Defaults to 1000.
 - `${MAX_PARTICLES}` (Optional): Maximum particle count to be used in the variable particle count plot. It can be any integer greater than 1. Defaults to 6000.
 - `${SLIT_WIDTH}` (Optional): Slit width to be used in the variable particle count plot. It can be any integer greater than 1 and less than the default lattice height (200). Defaults to 100.
 - `${SLIT_WIDTH_STEP}` (Optional): Step size for the slit width to be used in the variable slit width plot. It can be any integer greater than 1 and less than `${MAX_SLIT_WIDTH}`. Defaults to 10.
+- `${MIN_SLIT_WIDTH}` (Optional): Minimum slit width to be used in the variable slit width plot. It can be any integer greater than 1 and less than `${MAX_SLIT_WIDTH}`. Defaults to 10.
 - `${MAX_SLIT_WIDTH}` (Optional): Maximum slit width to be used in the variable slit width plot. It can be any integer greater than 1 and less than the default lattice height (200). Defaults to 100.
 - `${PARTICLE_COUNT}` (Optional): Particle count to be used in the variable slit width plot. It can be any integer greater than 1. Defaults to 3000.
 
