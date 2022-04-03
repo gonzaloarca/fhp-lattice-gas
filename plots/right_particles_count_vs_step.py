@@ -3,7 +3,7 @@ import argparse
 import os
 import matplotlib.pyplot as plot
 
-def variate_particles(cut_condition_name, threshold): 
+def vary_particles(cut_condition_name, threshold): 
     number_of_particles = [2000, 3000, 5000]
 
     for particles in number_of_particles:
@@ -34,7 +34,7 @@ def variate_particles(cut_condition_name, threshold):
     plot.close()
 
 
-def variate_slit_width(cut_condition_name, threshold, slit_width_step):
+def vary_slit_width(cut_condition_name, threshold, slit_width_step):
     N = 3000
     max_slit_width = 200
     slit_widths = [slit_width for slit_width in range(slit_width_step, max_slit_width + slit_width_step, slit_width_step)]
@@ -79,9 +79,9 @@ if __name__ == "__main__":
     threshold = 0.1
 
     if args.vary == "N":
-        variate_particles(cut_condition_name, threshold)
+        vary_particles(cut_condition_name, threshold)
     elif args.vary == "D":
-        variate_slit_width(cut_condition_name, threshold, int(args.slit_width_step))
+        vary_slit_width(cut_condition_name, threshold, int(args.slit_width_step))
     else:
         print("Invalid variation")
     
