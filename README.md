@@ -44,7 +44,9 @@ pipenv install
 To only execute the simulation without generating any plots or animation files, run the following command:
 
 ```bash
-java -DoutFileName=${OUTPUT_FILE_NAME} -DN=${PARTICLE_COUNT} -DD=${SLIT_WIDTH} -Dthreshold${THRESHOLD} -jar target/FHPLatticeGas-1.0-SNAPSHOT.jar
+java -DoutFileName=${OUTPUT_FILE_NAME} -DN=${PARTICLE_COUNT} \
+-DD=${SLIT_WIDTH} -Dthreshold${THRESHOLD} \
+-jar target/FHPLatticeGas-1.0-SNAPSHOT.jar
 ```
 
 where:
@@ -65,7 +67,8 @@ After running the standalone simulation, the animation modules may be used for g
 pipenv shell
 
 ## Inside the shell, run the following command
-python animation/animation.py --input ${SIMULATION_INPUT_FILE_NAME} --output ${XYZ_OUTPUT_FILE_NAME}
+python animation/animation.py --input ${SIMULATION_INPUT_FILE_NAME} \
+--output ${XYZ_OUTPUT_FILE_NAME}
 ```
 
 where:
@@ -80,7 +83,8 @@ where:
 pipenv shell
 
 ## Inside the shell, run the following command
-python animation/directions_animation.py --input ${SIMULATION_INPUT_FILE_NAME} --output ${XYZ_OUTPUT_FILE_NAME}
+python animation/directions_animation.py \
+--input ${SIMULATION_INPUT_FILE_NAME} --output ${XYZ_OUTPUT_FILE_NAME}
 ```
 
 where:
@@ -115,13 +119,23 @@ From the root directory, run:
 pipenv shell
 
 ## Run the simulations and generate plot
-python plots/equilibrium_time_plot.py --var=${INDEPENDENT_VARIABLE} --sample_size=${SAMPLE_SIZE}
+python plots/equilibrium_time_plot.py --var ${INDEPENDENT_VARIABLE} \
+--sample_size ${SAMPLE_SIZE} --particle_step ${PARTICLE_STEP} \
+--max_particles ${MAX_PARTICLES} --slit_width_step ${SLIT_WIDTH_STEP} \
+--max_slit_width ${MAX_SLIT_WIDTH} --particle_count ${PARTICLE_COUNT} \
+--slit_width ${SLIT_WIDTH}
 ```
 
 where:
 
 - `${INDEPENDENT_VARIABLE}`: Variable to be used as the independent variable in the plot. It can be either `N` for particle count or `D` for slit width.
 - `${SAMPLE_SIZE}` (Optional): Number of samples to be used in the plot. It can be any integer greater than 1. Defaults to 5.
+- `${PARTICLE_STEP}` (Optional): Step size for the particle count to be used in the variable particle count plot. It can be any integer greater than 1. Defaults to 1000.
+- `${MAX_PARTICLES}` (Optional): Maximum particle count to be used in the variable particle count plot. It can be any integer greater than 1. Defaults to 6000.
+- `${SLIT_WIDTH}` (Optional): Slit width to be used in the variable particle count plot. It can be any integer greater than 1 and less than the default lattice height (200). Defaults to 100.
+- `${SLIT_WIDTH_STEP}` (Optional): Step size for the slit width to be used in the variable slit width plot. It can be any integer greater than 1 and less than `${MAX_SLIT_WIDTH}`. Defaults to 10.
+- `${MAX_SLIT_WIDTH}` (Optional): Maximum slit width to be used in the variable slit width plot. It can be any integer greater than 1 and less than the default lattice height (200). Defaults to 100.
+- `${PARTICLE_COUNT}` (Optional): Particle count to be used in the variable slit width plot. It can be any integer greater than 1. Defaults to 3000.
 
 ## Simulation output
 
