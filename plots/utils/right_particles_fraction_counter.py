@@ -9,7 +9,7 @@ def is_right_particle(x_coordinate, lattice_width):
 
 def right_particles_fraction_counter(simulation_file_name):
     right_particles_count = []
-    total_particle_count = 1;
+    total_particle_count = 1
 
     with open(simulation_file_name) as simulation_file:
         timestep = -1
@@ -27,7 +27,7 @@ def right_particles_fraction_counter(simulation_file_name):
 
             # timestep data
             if (len(line.split()) == 1):
-                # get fraction by dividing by the total_particle_count after adding 
+                # get fraction by dividing by the total_particle_count after adding
                 # all particles in the lattice for the current timestep
                 timestep += 1
                 right_particles_count.append(0)
