@@ -30,12 +30,9 @@ def process_subgrids(N, lattice_width, lattice_height, subgrids, subgrid_width, 
             subgrid_y = (j * subgrid_width) + (subgrid_width / 2)
             subgrid_x = (i * subgrid_height) + (subgrid_height / 2)
             num_of_particles = len(subgrids[i][j])
-            avg_max_density = N / \
-                (lattice_height * lattice_width) * \
-                subgrid_height * subgrid_width * 2
-            subgrid_particle_density = num_of_particles / avg_max_density
+            subgrid_particle_density = num_of_particles / max_particles_per_subgrid * 25
             out_file.write(
-                f'{subgrid_x}\t{subgrid_y}\t0\t0\t0\t1\t{1-subgrid_particle_density if subgrid_particle_density != 0 else 1}\t{num_of_particles}\n')
+                f'{subgrid_x}\t{subgrid_y}\t0\t0\t0\t1\t{1-subgrid_particle_density if subgrid_particle_density != 0 else 1}\n')
 
 
 def write_density(input_file, subgrid_width, subgrid_height, out_filename):
@@ -92,4 +89,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    write_density(args.lattice_steps, 20, 20, "average_density.xyz")
+    write_density(args.lattice_steps, 10, 10, "average_density.xyz")
