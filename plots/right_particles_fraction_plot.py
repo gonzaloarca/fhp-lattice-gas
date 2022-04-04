@@ -13,7 +13,6 @@ def right_particles_fraction_plot(threshold, slit_width):
     for particle_count in particle_input:
         cmd = f"java -D={slit_width} -DN={particle_count} -Dthreshold={threshold} -DsimulationOutFileName={simulation_file_name} -jar ./target/FHPLatticeGas-1.0-SNAPSHOT.jar"
         print(f"Executing: {cmd}")
-        os.system('pwd')
         os.system(cmd)
 
         right_particles_fractions_count = right_particles_fraction_counter(
