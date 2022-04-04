@@ -44,3 +44,5 @@ target/
 # python cache files
 __pycache__/
 *.py[cod]
+*.pyc
+*.cpython-39.pyc

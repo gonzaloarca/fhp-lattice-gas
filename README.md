@@ -109,8 +109,14 @@ From the root directory, run:
 pipenv shell
 
 ## Run the simulations and generate plot
-python plots/plot_fraction_right_compound.py
+python plots/plot_fraction_right_compound.py --slit_width ${SLIT_WIDTH} \
+--threshold ${THRESHOLD}
 ```
+
+where:
+
+- `${SLIT_WIDTH}` (Optional): Slit width used in the simulations. By default it's 50
+- `${THRESHOLD}` (Optional): Cut condition threshold used in the simulations. By default it's 0.1
 
 **Plot 2: Equilibrium time as a function of particles in the system or slit width**:
 
