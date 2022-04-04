@@ -89,7 +89,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=argparse.FileType('r'),
                         default=None, help="File of subgrids simulation timesteps", dest="lattice_steps", required=True)
+    parser.add_argument("--output", type=argparse.FileType('r'),
+                        default="average_density.xyz", help="Output file name", dest="output_file_name", required=False)
 
     args = parser.parse_args()
 
-    write_density(args.lattice_steps, 20, 20, "average_density.xyz")
+    write_density(args.lattice_steps, 20, 20, args.output_file_name)
