@@ -29,7 +29,7 @@ public class LatticePrinter {
         printWriter.printf("%d\ncomment\n", latticeHeight * latticeWidth);
         for (int y = 0; y < latticeHeight; y++) {
             for (int x = 0; x < latticeWidth; x++) {
-                printWriter.printf("%f\t%f\t0\t%s\n", (x + (y % 2 == 0 ? 0.5 : 0)), (y * 0.866), lattice.getLatticeNode(y, x).getState().getYS() || lattice.getLatticeNode(y, x).getState().getXS() ? "1 0 0" : "0 0 1");
+                printWriter.printf("%f\t%f\t0\t%s\n", (x + (y % 2 == 0 ? 0.5 : 0)), (y * 0.866), lattice.getLatticeNode(y, x).getState().getYS() || lattice.getLatticeNode(y, x).getState().getXS() ? "255 255 255" : "0 0 0");
             }
         }
         printWriter.close();
